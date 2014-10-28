@@ -104,6 +104,7 @@ public class RemoteOperationResult implements Serializable {
         SHARE_FORBIDDEN,
         OK_REDIRECT_TO_NON_SECURE_CONNECTION,
         INVALID_MOVE_INTO_DESCENDANT,
+        INVALID_COPY_INTO_DESCENDANT,
         PARTIAL_MOVE_DONE,
         PARTIAL_COPY_DONE
     }
