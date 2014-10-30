@@ -86,6 +86,7 @@ public class AdvancedSslSocketFactory implements ProtocolSocketFactory {
      */
     public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) throws IOException, UnknownHostException {
         Socket socket = mSslContext.getSocketFactory().createSocket(host, port, clientHost, clientPort);
+        ((SSLSocket) socket).setEnabledProtocols(new String[]{"TLSv1", "TLSv1.1", "TLSv1.2"});
         verifyPeerIdentity(host, port, socket);
         return socket;
     }
@@ -178,6 +179,7 @@ public class AdvancedSslSocketFactory implements ProtocolSocketFactory {
             UnknownHostException {
     	Log_OC.d(TAG, "Creating SSL Socket with remote " + host + ":" + port);
         Socket socket = mSslContext.getSocketFactory().createSocket(host, port);
+        ((SSLSocket) socket).setEnabledProtocols(new String[]{"TLSv1", "TLSv1.1", "TLSv1.2"});
         verifyPeerIdentity(host, port, socket);
         return socket; 
     }
