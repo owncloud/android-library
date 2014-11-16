@@ -64,7 +64,6 @@ public class AdvancedSslSocketFactory implements ProtocolSocketFactory {
     private SSLContext mSslContext = null;
     private AdvancedX509TrustManager mTrustManager = null;
     private X509HostnameVerifier mHostnameVerifier = null;
-    
 
     public SSLContext getSslContext() {
         return mSslContext;
