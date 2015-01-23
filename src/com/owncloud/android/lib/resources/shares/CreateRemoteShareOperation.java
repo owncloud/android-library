@@ -71,12 +71,12 @@ public class CreateRemoteShareOperation extends RemoteOperation {
 	 * @param publicUpload		If 'false' (default) public cannot upload to a public shared folder. 
 	 * 							If 'true' public can upload to a shared folder. Only available for public link shares
 	 * @param password			Password to protect a public link share. Only available for public link shares
-	 * @param permissions		1 - Read only – Default for "public" shares
+	 * @param permissions		1 - Read only - Default for "public" shares
 	 * 							2 - Update
 	 * 							4 - Create
 	 * 							8 - Delete
 	 * 							16- Re-share
-	 * 							31- All above – Default for "private" shares
+	 * 							31- All above - Default for "private" shares
 	 * 							For user or group shares.
 	 * 							To obtain combinations, add the desired values together.  
 	 * 							For instance, for "Re-Share", "delete", "read", "update", add 16+8+2+1 = 27.
