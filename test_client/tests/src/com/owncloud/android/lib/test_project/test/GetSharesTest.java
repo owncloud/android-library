@@ -28,6 +28,7 @@ import java.io.File;
 
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode;
+import com.owncloud.android.lib.resources.shares.SharePermission;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.test_project.TestActivity;
 
@@ -63,7 +64,7 @@ public class GetSharesTest extends RemoteTest {
 			Utils.logAndThrow(LOG_TAG, result);
 		}
 		
-		result = mActivity.createShare(mFullPath2SharedFile, ShareType.PUBLIC_LINK, "", false, "", 1);
+		result = mActivity.createShare(mFullPath2SharedFile, ShareType.PUBLIC_LINK, "", false, "", SharePermission.PUBLIC_DEFAULT);
 		if (!result.isSuccess()  && result.getCode() != ResultCode.TIMEOUT) {
 			Utils.logAndThrow(LOG_TAG, result);
 		}
