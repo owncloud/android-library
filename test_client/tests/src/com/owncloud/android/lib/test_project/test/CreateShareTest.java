@@ -69,7 +69,7 @@ public class CreateShareTest extends RemoteTest {
 				"", 
 				false, 
 				"",
-                SharePermission.PUBLIC_DEFAULT);
+				SharePermission.PUBLIC_DEFAULT);
 		assertTrue(result.isSuccess());
 	}
 	
