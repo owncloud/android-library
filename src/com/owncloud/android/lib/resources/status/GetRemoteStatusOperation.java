@@ -89,8 +89,11 @@ public class GetRemoteStatusOperation extends RemoteOperation {
             Uri uri = Uri.parse(baseUrlSt);
             String userInfo = uri.getUserInfo();
             if(userInfo != null) {
-                OwnCloudCredentials creds = OwnCloudCredentialsFactory.newBasicCredentials(userInfo.split(":", 2)[0], userInfo.split(":", 2)[1]);
-                client.setCredentials(creds);
+                String[] userInfoParts = userInfo.split(":", 2);
+                if(userInfoParts.length == 2) {
+                    OwnCloudCredentials creds = OwnCloudCredentialsFactory.newBasicCredentials(userInfoParts[0], userInfoParts[1]);
+                    client.setCredentials(creds);
+                }
             }
 
             client.setFollowRedirects(false);
