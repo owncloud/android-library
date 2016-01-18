@@ -39,6 +39,8 @@ import android.net.Uri;
 
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.OwnCloudClientManagerFactory;
+import com.owncloud.android.lib.common.OwnCloudCredentials;
+import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.accounts.AccountUtils;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
@@ -83,6 +85,13 @@ public class GetRemoteStatusOperation extends RemoteOperation {
             params.setParameter(HttpMethodParams.USER_AGENT,
                     OwnCloudClientManagerFactory.getUserAgent());
             get.getParams().setDefaults(params);
+
+            Uri uri = Uri.parse(baseUrlSt);
+            String userInfo = uri.getUserInfo();
+            if(userInfo != null) {
+                OwnCloudCredentials creds = OwnCloudCredentialsFactory.newBasicCredentials(userInfo.split(":", 2)[0], userInfo.split(":", 2)[1]);
+                client.setCredentials(creds);
+            }
 
             client.setFollowRedirects(false);
             boolean isRedirectToNonSecureConnection = false;
