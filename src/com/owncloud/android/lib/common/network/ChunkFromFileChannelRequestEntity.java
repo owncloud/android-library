@@ -53,15 +53,33 @@ public class ChunkFromFileChannelRequestEntity implements RequestEntity, Progres
     private final FileChannel mChannel;
     private final String mContentType;
     private final long mChunkSize;
-    private final File mFile;
+    private final String mRemotePath;
     private long mOffset;
     private long mTransferred;
     Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<OnDatatransferProgressListener>();
     private ByteBuffer mBuffer = ByteBuffer.allocate(4096);
 
+    @Deprecated
     public ChunkFromFileChannelRequestEntity(
         final FileChannel channel, final String contentType, long chunkSize, final File file
     ) {
+        super();
+        if (channel == null || file == null) {
+            throw new IllegalArgumentException("File may not be null");
+        }
+        if (chunkSize <= 0) {
+            throw new IllegalArgumentException("Chunk size must be greater than zero");
+        }
+        mChannel = channel;
+        mContentType = contentType;
+        mChunkSize = chunkSize;
+        mRemotePath = file.getAbsolutePath();
+        mOffset = 0;
+        mTransferred = 0;
+    }
+
+    public ChunkFromFileChannelRequestEntity(
+        final FileChannel channel, final String contentType, long chunkSize, final String remotePath) {
         super();
         if (channel == null) {
             throw new IllegalArgumentException("File may not be null");
@@ -72,11 +90,11 @@ public class ChunkFromFileChannelRequestEntity implements RequestEntity, Progres
         mChannel = channel;
         mContentType = contentType;
         mChunkSize = chunkSize;
-        mFile = file;
+        mRemotePath = remotePath;
         mOffset = 0;
         mTransferred = 0;
     }
-    
+
     public void setOffset(long offset) {
         mOffset = offset;
     }
@@ -125,7 +143,7 @@ public class ChunkFromFileChannelRequestEntity implements RequestEntity, Progres
 
         try {
             mChannel.position(mOffset);
-            long size = mFile.length();
+            long size = mChannel.size();
             if (size == 0) size = -1;
             long maxCount = Math.min(mOffset + mChunkSize, mChannel.size());
             while (mChannel.position() < maxCount) {
@@ -143,7 +161,7 @@ public class ChunkFromFileChannelRequestEntity implements RequestEntity, Progres
                 synchronized (mDataTransferListeners) {
                     it = mDataTransferListeners.iterator();
                     while (it.hasNext()) {
-                        it.next().onTransferProgress(readCount, mTransferred, size, mFile.getAbsolutePath());
+                        it.next().onTransferProgress(readCount, mTransferred, size, mRemotePath);
                     }
                 }
             }

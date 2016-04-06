@@ -25,10 +25,9 @@
 package com.owncloud.android.lib.resources.files;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.Random;
 
@@ -58,18 +57,21 @@ public class ChunkedUploadRemoteFileOperation extends UploadRemoteFileOperation 
     ){
 		 super(storagePath, remotePath, mimeType, requiredEtag);
 	}
+
+    public ChunkedUploadRemoteFileOperation(
+        FileInputStream inputStream, String remotePath, String mimeType, String requiredEtag
+    ){
+        super(inputStream, remotePath, mimeType, requiredEtag);
+    }
     
     @Override
     protected int uploadFile(OwnCloudClient client) throws IOException {
         int status = -1;
 
         FileChannel channel = null;
-        RandomAccessFile raf = null;
         try {
-            File file = new File(mLocalPath);
-            raf = new RandomAccessFile(file, "r");
-            channel = raf.getChannel();
-            mEntity = new ChunkFromFileChannelRequestEntity(channel, mMimeType, CHUNK_SIZE, file);
+            channel = mInputStream.getChannel();
+            mEntity = new ChunkFromFileChannelRequestEntity(channel, mMimeType, CHUNK_SIZE, mRemotePath);
             synchronized (mDataTransferListeners) {
 				((ProgressiveDataTransferer)mEntity)
                         .addDatatransferProgressListeners(mDataTransferListeners);
@@ -78,10 +80,10 @@ public class ChunkedUploadRemoteFileOperation extends UploadRemoteFileOperation 
             long offset = 0;
             String uriPrefix = client.getWebdavUri() + WebdavUtils.encodePath(mRemotePath) +
                     "-chunking-" + Math.abs((new Random()).nextInt(9000)+1000) + "-" ;
-            long totalLength = file.length();
+            long totalLength = mInputStream.getChannel().size();
             long chunkCount = (long) Math.ceil((double)totalLength / CHUNK_SIZE);
             String chunkSizeStr = String.valueOf(CHUNK_SIZE);
-            String totalLengthStr = String.valueOf(file.length());
+            String totalLengthStr = String.valueOf(channel.size());
             for (int chunkIndex = 0; chunkIndex < chunkCount ; chunkIndex++, offset += CHUNK_SIZE) {
                 if (chunkIndex == chunkCount - 1) {
                     chunkSizeStr = String.valueOf(CHUNK_SIZE * chunkCount - totalLength);
@@ -120,7 +122,7 @@ public class ChunkedUploadRemoteFileOperation extends UploadRemoteFileOperation 
                 }
 
                 client.exhaustResponse(mPutMethod.getResponseBodyAsStream());
-                Log_OC.d(TAG, "Upload of " + mLocalPath + " to " + mRemotePath +
+                Log_OC.d(TAG, "Upload to " + mRemotePath +
                         ", chunk index " + chunkIndex + ", count " + chunkCount +
                         ", HTTP result status " + status);
 
@@ -131,8 +133,6 @@ public class ChunkedUploadRemoteFileOperation extends UploadRemoteFileOperation 
         } finally {
             if (channel != null)
                 channel.close();
-            if (raf != null)
-                raf.close();
             if (mPutMethod != null)
                 mPutMethod.releaseConnection();    // let the connection available for other methods
         }

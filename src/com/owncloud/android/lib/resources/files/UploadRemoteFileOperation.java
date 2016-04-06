@@ -26,8 +26,11 @@ package com.owncloud.android.lib.resources.files;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.FileChannel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -63,12 +66,12 @@ public class UploadRemoteFileOperation extends RemoteOperation {
 	protected static final String OC_TOTAL_LENGTH_HEADER = "OC-Total-Length";
 	protected static final String IF_MATCH_HEADER = "If-Match";
 
-	protected String mLocalPath;
 	protected String mRemotePath;
 	protected String mMimeType;
 	protected PutMethod mPutMethod = null;
 	protected boolean mForbiddenCharsInServer = false;
 	protected String mRequiredEtag = null;
+	protected FileInputStream mInputStream;
 	
 	protected final AtomicBoolean mCancellationRequested = new AtomicBoolean(false);
 	protected Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<OnDatatransferProgressListener>();
@@ -76,13 +79,24 @@ public class UploadRemoteFileOperation extends RemoteOperation {
 	protected RequestEntity mEntity = null;
 
 	public UploadRemoteFileOperation(String localPath, String remotePath, String mimeType) {
-		mLocalPath = localPath;
+		try {
+			mInputStream = new FileInputStream(new File(localPath));
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException("The local path for the file is invalid.");
+		}
 		mRemotePath = remotePath;
 		mMimeType = mimeType;
 	}
 
 	public UploadRemoteFileOperation(String localPath, String remotePath, String mimeType, String requiredEtag) {
 		this(localPath, remotePath, mimeType);
+		mRequiredEtag = requiredEtag;
+	}
+
+	public UploadRemoteFileOperation(FileInputStream inputStream, String remotePath, String mimeType, String requiredEtag) {
+		mInputStream = inputStream;
+		mRemotePath = remotePath;
+		mMimeType = mimeType;
 		mRequiredEtag = requiredEtag;
 	}
 
@@ -141,9 +155,10 @@ public class UploadRemoteFileOperation extends RemoteOperation {
 
 	protected int uploadFile(OwnCloudClient client) throws IOException {
 		int status = -1;
+		FileChannel channel = null;
 		try {
-			File f = new File(mLocalPath);
-			mEntity  = new FileRequestEntity(f, mMimeType);
+			channel = mInputStream.getChannel();
+			mEntity  = new FileRequestEntity(channel, mMimeType, mRemotePath);
 			synchronized (mDataTransferListeners) {
 				((ProgressiveDataTransferer)mEntity)
                         .addDatatransferProgressListeners(mDataTransferListeners);
@@ -151,7 +166,8 @@ public class UploadRemoteFileOperation extends RemoteOperation {
 			if (mRequiredEtag != null && mRequiredEtag.length() > 0) {
 				mPutMethod.addRequestHeader(IF_MATCH_HEADER, "\"" + mRequiredEtag + "\"");
 			}
-			mPutMethod.addRequestHeader(OC_TOTAL_LENGTH_HEADER, String.valueOf(f.length()));
+			long fileSize = channel.size();
+			mPutMethod.addRequestHeader(OC_TOTAL_LENGTH_HEADER, String.valueOf(fileSize));
 			mPutMethod.setRequestEntity(mEntity);
 			status = client.executeMethod(mPutMethod);
 
