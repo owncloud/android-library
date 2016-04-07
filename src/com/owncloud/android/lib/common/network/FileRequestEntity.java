@@ -26,6 +26,7 @@
 package com.owncloud.android.lib.common.network;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,9 +40,6 @@ import java.util.Set;
 
 import org.apache.commons.httpclient.methods.RequestEntity;
 
-import com.owncloud.android.lib.common.utils.Log_OC;
-
-
 
 /**
  * A RequestEntity that represents a File.
@@ -49,22 +47,43 @@ import com.owncloud.android.lib.common.utils.Log_OC;
  */
 public class FileRequestEntity implements RequestEntity, ProgressiveDataTransferer {
 
-    final File mFile;
-    final String mContentType;
-    Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<OnDatatransferProgressListener>();
+    protected final FileChannel mChannel;
+    protected final String mRemotePath;
+    protected final String mContentType;
+    protected Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<OnDatatransferProgressListener>();
 
+    @Deprecated
     public FileRequestEntity(final File file, final String contentType) {
         super();
-        this.mFile = file;
-        this.mContentType = contentType;
-        if (file == null) {
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile(file, "r");
+            mChannel = raf.getChannel();
+        } catch (FileNotFoundException e) {
             throw new IllegalArgumentException("File may not be null");
         }
+        this.mContentType = contentType;
+        this.mRemotePath = file.getAbsolutePath();
+    }
+
+    public FileRequestEntity(final FileChannel channel, final String contentType, final String remotePath) {
+        super();
+        if (channel == null) {
+            throw new IllegalArgumentException("File channel may not be null");
+        }
+        this.mChannel = channel;
+        this.mRemotePath = remotePath;
+        this.mContentType = contentType;
     }
     
     @Override
     public long getContentLength() {
-        return mFile.length();
+        try {
+            return mChannel.size();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
@@ -103,15 +122,13 @@ public class FileRequestEntity implements RequestEntity, ProgressiveDataTransfer
     public void writeRequest(final OutputStream out) throws IOException {
         ByteBuffer tmp = ByteBuffer.allocate(4096);
         int readResult = 0;
-        
-        RandomAccessFile raf = new RandomAccessFile(mFile, "r");
-        FileChannel channel = raf.getChannel();
+
         Iterator<OnDatatransferProgressListener> it = null;
         long transferred = 0;
-        long size = mFile.length();
+        long size = mChannel.size();
         if (size == 0) size = -1;
         try {
-            while ((readResult = channel.read(tmp)) >= 0) {
+            while ((readResult = mChannel.read(tmp)) >= 0) {
                 try {
                     out.write(tmp.array(), 0, readResult);
                 } catch (IOException io) {
@@ -123,7 +140,7 @@ public class FileRequestEntity implements RequestEntity, ProgressiveDataTransfer
                 synchronized (mDataTransferListeners) {
                     it = mDataTransferListeners.iterator();
                     while (it.hasNext()) {
-                        it.next().onTransferProgress(readResult, transferred, size, mFile.getAbsolutePath());
+                        it.next().onTransferProgress(readResult, transferred, size, mRemotePath);
                     }
                 }
             }
@@ -141,13 +158,8 @@ public class FileRequestEntity implements RequestEntity, ProgressiveDataTransfer
         } catch (WriteException we) {
             throw we.getWrapped();
 
-        } finally {
-            try {
-                channel.close();
-                raf.close();
-            } catch (IOException io) {
-                // ignore failures closing source file
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
