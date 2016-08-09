@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2015 ownCloud Inc.
+ *   Copyright (C) 2016 ownCloud GmbH.
  *   Copyright (C) 2012  Bartek Przybylski
  *   
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -379,6 +379,12 @@ public class AccountUtils {
          * OC account version
          */
         public static final String KEY_OC_ACCOUNT_VERSION = "oc_account_version";
+
+		/**
+		 * User's display name
+		 */
+		public static final String KEY_DISPLAY_NAME = "oc_display_name";
+
     }
 
 }
