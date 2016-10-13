@@ -27,6 +27,7 @@ package com.owncloud.android.lib.test_project.test;
 import java.io.File;
 
 import com.owncloud.android.lib.resources.shares.OCShare;
+import com.owncloud.android.lib.resources.shares.SharePermission;
 import com.owncloud.android.lib.resources.shares.ShareType;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode;
@@ -60,7 +61,7 @@ public class RemoveShareTest extends RemoteTest {
 			Utils.logAndThrow(LOG_TAG, result);
 		}
 		
-		result = mActivity.createShare(mFullPath2FileToUnshare, ShareType.PUBLIC_LINK, "", false, "", 1);
+		result = mActivity.createShare(mFullPath2FileToUnshare, ShareType.PUBLIC_LINK, "", false, "", SharePermission.PUBLIC_DEFAULT);
 		if (!result.isSuccess()) {
 			Utils.logAndThrow(LOG_TAG, result);
 		} else {
