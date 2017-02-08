@@ -95,7 +95,6 @@ public class RemoteOperationResult implements Serializable {
         LOCAL_STORAGE_NOT_MOVED,
         LOCAL_STORAGE_NOT_COPIED,
         OAUTH2_ERROR_ACCESS_DENIED,
-        QUOTA_EXCEEDED,
         ACCOUNT_NOT_FOUND,
         ACCOUNT_EXCEPTION,
         ACCOUNT_NOT_NEW,
@@ -115,7 +114,8 @@ public class RemoteOperationResult implements Serializable {
         INVALID_CHARACTER_DETECT_IN_SERVER,
         DELAYED_FOR_WIFI,
         LOCAL_FILE_NOT_FOUND,
-        MAINTENANCE_MODE
+        MAINTENANCE_MODE,
+        QUOTA_EXCEEDED
     }
 
     private boolean mSuccess = false;
