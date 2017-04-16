@@ -61,6 +61,7 @@ import com.owncloud.android.lib.common.utils.Log_OC;
 public class AdvancedSslSocketFactory implements SecureProtocolSocketFactory {
 
     private static final String TAG = AdvancedSslSocketFactory.class.getSimpleName();
+    private static final string ENABLED_PROTOCOLS[] = {"TLSv1.2","TLSv1.1","TLSv1"};
     
     private SSLContext mSslContext = null;
     private AdvancedX509TrustManager mTrustManager = null;
@@ -245,6 +246,7 @@ public class AdvancedSslSocketFactory implements SecureProtocolSocketFactory {
             ///	(that should be an instance of AdvancedX509TrustManager) 
             try {
                 SSLSocket sock = (SSLSocket) socket;    // a new SSLSession instance is created as a "side effect" 
+                sock.setEnabledProtocols(ENABLED_PROTOCOLS);
                 sock.startHandshake();
                 
             } catch (RuntimeException e) {
