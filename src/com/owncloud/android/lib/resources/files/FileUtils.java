@@ -70,11 +70,11 @@ public class FileUtils {
 	 * @param path
 	 * @return
 	 */
-	public static boolean isValidPath(String path, boolean versionSupportsForbidenChars) {
+	public static boolean isValidPath(String path, boolean versionSupportsForbiddenChars) {
 		boolean result = true;
 		
 		Log_OC.d(TAG, "path ....... " + path);
-		if (!versionSupportsForbidenChars &&
+		if (!versionSupportsForbiddenChars &&
 				(path.contains("\\") || path.contains("<") || path.contains(">") ||
 				path.contains(":") || path.contains("\"") || path.contains("|") || 
 				path.contains("?") || path.contains("*") ) ){

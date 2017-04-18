@@ -27,7 +27,7 @@ package com.owncloud.android.lib.resources.shares;
 
 
 /**
- * Provides method to define a set of share permissions and calculate the appropiate
+ * Provides method to define a set of share permissions and calculate the appropriate
  * int value representing it.
  */
 public class SharePermissionsBuilder {
