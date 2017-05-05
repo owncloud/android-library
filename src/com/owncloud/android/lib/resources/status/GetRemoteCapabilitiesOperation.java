@@ -94,9 +94,11 @@ public class GetRemoteCapabilitiesOperation extends RemoteOperation {
     private static final String PROPERTY_DAYS = "days";
     private static final String PROPERTY_SEND_MAIL = "send_mail";
     private static final String PROPERTY_UPLOAD = "upload";
+    private static final String PROPERTY_MULTIPLE = "multiple";
     private static final String PROPERTY_RESHARING = "resharing";
     private static final String PROPERTY_OUTGOING = "outgoing";
     private static final String PROPERTY_INCOMING = "incoming";
+    private static final String PROPERTY_PRIVACY_WARNING = "privacy_warning";
 
     private static final String PROPERTY_BIGFILECHUNKING = "bigfilechunking";
     private static final String PROPERTY_UNDELETE = "undelete";
@@ -204,6 +206,17 @@ public class GetRemoteCapabilitiesOperation extends RemoteOperation {
                                 if (respPublic.has(PROPERTY_UPLOAD)){
                                     capability.setFilesSharingPublicUpload(CapabilityBooleanType.fromBooleanValue(
                                             respPublic.getBoolean(PROPERTY_UPLOAD)));
+                                }
+                                if (respPublic.has(PROPERTY_MULTIPLE)) {
+                                    capability.setFilesSharingPublicMultiple(CapabilityBooleanType.fromBooleanValue(
+                                            respPublic.getBoolean(PROPERTY_MULTIPLE)));
+                                }
+                                if (respPublic.has(PROPERTY_PRIVACY_WARNING)) {
+                                    capability.setFilesSharingPublicDisplayPrivacyWarning(
+                                        CapabilityBooleanType.fromBooleanValue(
+                                            respPublic.getBoolean(PROPERTY_PRIVACY_WARNING)
+                                        )
+                                    );
                                 }
                             }
 
