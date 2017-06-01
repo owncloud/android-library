@@ -49,6 +49,8 @@ public class AccountUtils {
 
     public static final String WEBDAV_PATH_4_0 = "/remote.php/webdav";
     public static final String STATUS_PATH = "/status.php";
+    public static final String INDEX_PATH = "/index.php";
+    public static final String FILES_PATH = "/f";
 
     /**
      * Constructs full url to host and webdav resource basing on host version
@@ -104,6 +106,29 @@ public class AccountUtils {
 
         return baseurl;
     }
+
+
+    /**
+     * Extracts server url for a file
+     * @param context
+     * @param account
+     * @param fileId remote file id
+     * @return url server for file or null on failure
+     */
+    public static String getUrlForFile (Context context, Account account, String fileId)
+            throws AccountNotFoundException{
+
+        AccountManager ama = AccountManager.get(context.getApplicationContext());
+
+        String baseUrl = ama.getUserData(account, Constants.KEY_OC_BASE_URL);
+
+        if (baseUrl == null)
+            throw new AccountNotFoundException(account, "Account not found", null);
+
+        String fileUrl = baseUrl + INDEX_PATH + FILES_PATH + "/" + fileId;
+
+        return fileUrl;
+    };
 
 
     /**
@@ -224,6 +249,7 @@ public class AccountUtils {
 
         return accountName;
     }
+
 
     public static void saveClient(OwnCloudClient client, Account savedAccount, Context context) {
 
