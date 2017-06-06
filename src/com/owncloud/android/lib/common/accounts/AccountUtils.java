@@ -49,7 +49,6 @@ public class AccountUtils {
 
     public static final String WEBDAV_PATH_4_0 = "/remote.php/webdav";
     public static final String STATUS_PATH = "/status.php";
-    public static final String INDEX_PATH = "/index.php";
 
     /**
      * Constructs full url to host and webdav resource basing on host version
