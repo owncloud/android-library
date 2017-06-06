@@ -25,10 +25,6 @@
 
 package com.owncloud.android.lib.common.accounts;
 
-import java.io.IOException;
-
-import org.apache.commons.httpclient.Cookie;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountsException;
@@ -42,6 +38,10 @@ import com.owncloud.android.lib.common.OwnCloudCredentials;
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
+
+import org.apache.commons.httpclient.Cookie;
+
+import java.io.IOException;
 
 public class AccountUtils {
 
@@ -104,7 +104,6 @@ public class AccountUtils {
 
         return baseurl;
     }
-
 
     /**
      * Get the username corresponding to an OC account.
@@ -224,6 +223,7 @@ public class AccountUtils {
 
         return accountName;
     }
+
 
     public static void saveClient(OwnCloudClient client, Account savedAccount, Context context) {
 
