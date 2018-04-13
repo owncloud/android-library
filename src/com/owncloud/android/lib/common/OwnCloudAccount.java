@@ -117,7 +117,7 @@ public class OwnCloudAccount {
      * @throws OperationCanceledException
      */
     public void loadCredentials(Context context)
-        throws AccountNotFoundException, AuthenticatorException,
+        throws AuthenticatorException,
                 IOException, OperationCanceledException {
 
         if (context == null) {

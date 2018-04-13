@@ -93,9 +93,7 @@ public class BearerCredentials implements Credentials {
         if (this == o) return true;
         if (this.getClass().equals(o.getClass())) {
             BearerCredentials that = (BearerCredentials) o;
-            if (LangUtils.equals(mAccessToken, that.mAccessToken)) {
-                return true;
-            }
+            return LangUtils.equals(mAccessToken, that.mAccessToken);
         }
         return false;
     }

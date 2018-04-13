@@ -71,7 +71,7 @@ public class WebdavEntry {
             @SuppressWarnings("rawtypes")
             DavProperty prop = propSet.get(DavPropertyName.DISPLAYNAME);
             if (prop != null) {
-                mName = (String) prop.getName().toString();
+                mName = prop.getName().toString();
                 mName = mName.substring(1, mName.length() - 1);
             } else {
                 String[] tmp = mPath.split("/");

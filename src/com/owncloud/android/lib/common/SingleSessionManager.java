@@ -190,9 +190,7 @@ public class SingleSessionManager implements OwnCloudClientManager {
 
 
     @Override
-    public void saveAllClients(Context context, String accountType)
-        throws AccountNotFoundException, AuthenticatorException, IOException,
-        OperationCanceledException {
+    public void saveAllClients(Context context, String accountType) {
 
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log_OC.d(TAG, "Saving sessions... ");

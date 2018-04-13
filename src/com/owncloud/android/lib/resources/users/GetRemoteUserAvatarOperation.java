@@ -81,7 +81,6 @@ public class GetRemoteUserAvatarOperation extends RemoteOperation {
             String uri =
                 client.getBaseUri() + NON_OFFICIAL_AVATAR_PATH +
                 client.getCredentials().getUsername() + "/" + mDimension;
-            ;
             Log_OC.d(TAG, "avatar URI: " + uri);
             get = new GetMethod(uri);
             /*  Conditioned call is corrupting the input stream of the connection.

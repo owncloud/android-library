@@ -80,4 +80,4 @@ public enum CapabilityBooleanType {
         return getValue() == 1;
     }
 
-};
+}

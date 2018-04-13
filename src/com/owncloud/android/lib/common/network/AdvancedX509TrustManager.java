@@ -76,7 +76,7 @@ public class AdvancedX509TrustManager implements X509TrustManager {
      * @return                      The first X509TrustManager found in factory.
      * @throws CertStoreException   When no X509TrustManager instance was found in factory
      */
-    private X509TrustManager findX509TrustManager(TrustManagerFactory factory) throws CertStoreException {
+    private X509TrustManager findX509TrustManager(TrustManagerFactory factory) {
         TrustManager tms[] = factory.getTrustManagers();
         for (int i = 0; i < tms.length; i++) {
             if (tms[i] instanceof X509TrustManager) {
@@ -100,7 +100,7 @@ public class AdvancedX509TrustManager implements X509TrustManager {
      * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[],
      *      String authType)
      */
-    public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] certificates, String authType) {
         if (!isKnownServer(certificates[0])) {
         	CertificateCombinedException result = new CertificateCombinedException(certificates[0]);
         	try {

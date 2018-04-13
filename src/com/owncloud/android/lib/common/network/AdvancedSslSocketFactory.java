@@ -93,7 +93,7 @@ public class AdvancedSslSocketFactory implements SecureProtocolSocketFactory {
      */
     @Override
     public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort)
-        throws IOException, UnknownHostException {
+        throws IOException {
 
         Socket socket = mSslContext.getSocketFactory().createSocket(host, port, clientHost, clientPort);
         enableSecureProtocols(socket);
@@ -158,8 +158,7 @@ public class AdvancedSslSocketFactory implements SecureProtocolSocketFactory {
     @Override
     public Socket createSocket(final String host, final int port,
                                final InetAddress localAddress, final int localPort,
-                               final HttpConnectionParams params) throws IOException,
-        UnknownHostException, ConnectTimeoutException {
+                               final HttpConnectionParams params) throws IOException {
         Log_OC.d(TAG, "Creating SSL Socket with remote " + host + ":" + port + ", local " + localAddress + ":" +
             localPort + ", params: " + params);
         if (params == null) {
@@ -188,8 +187,7 @@ public class AdvancedSslSocketFactory implements SecureProtocolSocketFactory {
      * @see ProtocolSocketFactory#createSocket(java.lang.String, int)
      */
     @Override
-    public Socket createSocket(String host, int port) throws IOException,
-        UnknownHostException {
+    public Socket createSocket(String host, int port) throws IOException {
         Log_OC.d(TAG, "Creating SSL Socket with remote " + host + ":" + port);
         Socket socket = mSslContext.getSocketFactory().createSocket(host, port);
         enableSecureProtocols(socket);
@@ -199,8 +197,7 @@ public class AdvancedSslSocketFactory implements SecureProtocolSocketFactory {
 
 
     @Override
-    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException,
-        UnknownHostException {
+    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
         Socket sslSocket = mSslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
         enableSecureProtocols(sslSocket);
         verifyPeerIdentity(host, port, sslSocket);
