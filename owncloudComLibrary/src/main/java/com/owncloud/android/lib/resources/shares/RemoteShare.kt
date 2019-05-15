@@ -38,6 +38,7 @@ import java.io.Serializable
  * @author David González Verdugo
  */
 class RemoteShare : Parcelable, Serializable {
+    var id: Long = 0
     var shareWith: String = ""
     var path: String = ""
     var token: String = ""
@@ -48,15 +49,13 @@ class RemoteShare : Parcelable, Serializable {
     var fileSource: Long = 0
     var itemSource: Long = 0
     var shareType: ShareType? = null
-    var permissions: Int = INIT_PERMISSION
+    var permissions: Int = DEFAULT_PERMISSION
     var sharedDate: Long = INIT_SHARED_DATE
     var expirationDate: Long = INIT_EXPIRATION_DATE_IN_MILLIS
-    var isFolder: Boolean = false
+    var isFolder: Boolean = path.endsWith(FileUtils.PATH_SEPARATOR)
     var userId: Long = 0
-    var remoteId: Long = 0
 
-    val isPasswordProtected: Boolean
-        get() = ShareType.PUBLIC_LINK == shareType && shareWith.isNotEmpty()
+    val isValid: Boolean = id > -1
 
     constructor() : super() {
         resetData()
@@ -75,6 +74,7 @@ class RemoteShare : Parcelable, Serializable {
      * Used internally. Reset all file properties
      */
     private fun resetData() {
+        id = -1
         shareWith = ""
         path = ""
         token = ""
@@ -91,7 +91,6 @@ class RemoteShare : Parcelable, Serializable {
         sharedWithAdditionalInfo = ""
         isFolder = false
         userId = -1
-        remoteId = -1
     }
 
     /**
@@ -104,6 +103,7 @@ class RemoteShare : Parcelable, Serializable {
     }
 
     fun readFromParcel(source: Parcel) {
+        id = source.readLong()
         shareWith = source.readString()
         path = source.readString()
         token = source.readString()
@@ -123,12 +123,12 @@ class RemoteShare : Parcelable, Serializable {
         expirationDate = source.readLong()
         isFolder = source.readInt() == 0
         userId = source.readLong()
-        remoteId = source.readLong()
     }
 
     override fun describeContents(): Int = this.hashCode()
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
+        dest.writeLong(id)
         dest.writeString(shareWith)
         dest.writeString(path)
         dest.writeString(token)
@@ -144,7 +144,6 @@ class RemoteShare : Parcelable, Serializable {
         dest.writeLong(expirationDate)
         dest.writeInt(if (isFolder) 1 else 0)
         dest.writeLong(userId)
-        dest.writeLong(remoteId)
     }
 
     companion object {
@@ -156,7 +155,6 @@ class RemoteShare : Parcelable, Serializable {
 
         private val TAG = RemoteShare::class.java.simpleName
 
-        const val INIT_PERMISSION = 0
         const val DEFAULT_PERMISSION = -1
         const val READ_PERMISSION_FLAG = 1
         const val UPDATE_PERMISSION_FLAG = 2

@@ -65,8 +65,7 @@ import java.util.Locale
  * To obtain combinations, add the desired values together.
  * For instance, for Re-Share, delete, read, update, add 16+8+2+1 = 27.
  */
-class CreateRemoteShareOperation
-    (
+class CreateRemoteShareOperation(
     private val remoteFilePath: String,
     private val shareType: ShareType,
     private val shareWith: String,
@@ -81,10 +80,6 @@ class CreateRemoteShareOperation
     var expirationDateInMillis: Long = INIT_EXPIRATION_DATE_IN_MILLIS // Expiration date to set for the public link
 
     var publicUpload: Boolean = false // Upload permissions for the public link (only folders)
-
-    init {
-        retrieveShareDetails = false        // defaults to false for backwards compatibility
-    }
 
     override fun run(client: OwnCloudClient): RemoteOperationResult<ShareParserResult> {
         var result: RemoteOperationResult<ShareParserResult>
@@ -107,10 +102,10 @@ class CreateRemoteShareOperation
                 formBodyBuilder.add(PARAM_EXPIRATION_DATE, formattedExpirationDate)
             }
 
-            if (publicUpload == true) {
+            if (publicUpload) {
                 formBodyBuilder.add(PARAM_PUBLIC_UPLOAD, publicUpload.toString())
             }
-            if (!password.isNullOrEmpty()) {
+            if (password.isNotEmpty()) {
                 formBodyBuilder.add(PARAM_PASSWORD, password)
             }
             if (RemoteShare.DEFAULT_PERMISSION != permissions) {
@@ -126,7 +121,7 @@ class CreateRemoteShareOperation
             postMethod.setRequestBody(formBodyBuilder.build())
 
             postMethod.setRequestHeader(HttpConstants.CONTENT_TYPE_HEADER, HttpConstants.CONTENT_TYPE_URLENCODED_UTF8)
-            postMethod.addRequestHeader(RemoteOperation.OCS_API_HEADER, RemoteOperation.OCS_API_HEADER_VALUE)
+            postMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE)
 
             val status = client.executeHttpMethod(postMethod)
 
@@ -141,12 +136,10 @@ class CreateRemoteShareOperation
                 result = parser.parse(postMethod.responseBodyAsString)
 
                 if (result.isSuccess && retrieveShareDetails) {
-
-                    // TODO Use executeHttpMethod
                     // retrieve more info - POST only returns the index of the new share
                     val emptyShare = result.data.shares[0]
                     val getInfo = GetRemoteShareOperation(
-                        emptyShare.remoteId
+                        emptyShare.id
                     )
                     result = getInfo.execute(client)
                 }
