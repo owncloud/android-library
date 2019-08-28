@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2016 ownCloud GmbH.
+ *   Copyright (C) 2019 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -37,9 +37,6 @@ public class OwnCloudClientManagerFactory {
         switch (policy) {
             case ALWAYS_NEW_CLIENT:
                 return new SimpleFactoryManager();
-
-            case SINGLE_SESSION_PER_ACCOUNT:
-                return new SingleSessionManager();
 
             case SINGLE_SESSION_PER_ACCOUNT_IF_SERVER_SUPPORTS_SERVER_MONITORING:
                 return new DynamicSessionManager();
@@ -86,16 +83,11 @@ public class OwnCloudClientManagerFactory {
                 !(sDefaultSingleton instanceof SimpleFactoryManager)) {
             return true;
         }
-        if (policy == Policy.SINGLE_SESSION_PER_ACCOUNT &&
-                !(sDefaultSingleton instanceof SingleSessionManager)) {
-            return true;
-        }
         return false;
     }
 
-    public static enum Policy {
+    public enum Policy {
         ALWAYS_NEW_CLIENT,
-        SINGLE_SESSION_PER_ACCOUNT,
         SINGLE_SESSION_PER_ACCOUNT_IF_SERVER_SUPPORTS_SERVER_MONITORING
     }
 }
