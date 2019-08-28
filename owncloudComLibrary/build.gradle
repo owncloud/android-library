@@ -12,6 +12,7 @@ dependencies {
 
 allOpen {
     // allows mocking for classes w/o directly opening them for release builds
+    // Hi
     annotation 'com.owncloud.android.lib.testing.OpenClass'
 }
 
