@@ -145,7 +145,6 @@ public class AccountUtils {
         boolean isOauth2 = supportsOAuth2 != null && supportsOAuth2.equals("TRUE");
 
         String username = AccountUtils.getUsernameForAccount(account);
-        OwnCloudVersion version = new OwnCloudVersion(am.getUserData(account, Constants.KEY_OC_VERSION));
 
         if (isOauth2) {
             String accessToken = am.blockingGetAuthToken(
@@ -154,7 +153,6 @@ public class AccountUtils {
                     false);
 
             credentials = OwnCloudCredentialsFactory.newBearerCredentials(username, accessToken);
-
         } else {
             String password = am.blockingGetAuthToken(
                     account,
@@ -163,8 +161,7 @@ public class AccountUtils {
 
             credentials = OwnCloudCredentialsFactory.newBasicCredentials(
                     username,
-                    password,
-                    version.isPreemptiveAuthenticationPreferred()
+                    password
             );
         }
 
@@ -203,9 +200,8 @@ public class AccountUtils {
         if (url.contains("://")) {
             url = url.substring(serverBaseUrl.toString().indexOf("://") + 3);
         }
-        String accountName = username + "@" + url;
 
-        return accountName;
+        return username + "@" + url;
     }
 
     public static void saveClient(OwnCloudClient client, Account savedAccount, Context context) {
