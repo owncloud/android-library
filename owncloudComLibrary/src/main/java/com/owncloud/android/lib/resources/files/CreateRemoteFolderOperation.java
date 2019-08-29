@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2016 ownCloud GmbH.
+ *   Copyright (C) 2019 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,6 @@ import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.lib.resources.status.OwnCloudVersion;
 
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -75,25 +74,7 @@ public class CreateRemoteFolderOperation extends RemoteOperation {
      */
     @Override
     protected RemoteOperationResult run(OwnCloudClient client) {
-        RemoteOperationResult result;
-        OwnCloudVersion version = client.getOwnCloudVersion();
-        boolean versionWithForbiddenChars =
-                (version != null && version.isVersionWithForbiddenCharacters());
-        boolean noInvalidChars = FileUtils.isValidPath(mRemotePath, versionWithForbiddenChars);
-        if (noInvalidChars) {
-            result = createFolder(client);
-            if (!result.isSuccess() && mCreateFullPath &&
-                    RemoteOperationResult.ResultCode.CONFLICT == result.getCode()) {
-                result = createParentFolder(FileUtils.getParentPath(mRemotePath), client);
-                if (result.isSuccess()) {
-                    result = createFolder(client);    // second (and last) try
-                }
-            }
-        } else {
-            result = new RemoteOperationResult<>(ResultCode.INVALID_CHARACTER_IN_NAME);
-        }
-
-        return result;
+        return new RemoteOperationResult<>(ResultCode.INVALID_CHARACTER_IN_NAME);
     }
 
     private RemoteOperationResult createFolder(OwnCloudClient client) {
