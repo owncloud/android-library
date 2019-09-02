@@ -24,8 +24,6 @@
 
 package com.owncloud.android.lib.resources.files;
 
-import com.owncloud.android.lib.common.utils.Log_OC;
-
 import java.io.File;
 
 public class FileUtils {
@@ -38,48 +36,5 @@ public class FileUtils {
         String parentPath = new File(remotePath).getParent();
         parentPath = parentPath.endsWith(PATH_SEPARATOR) ? parentPath : parentPath + PATH_SEPARATOR;
         return parentPath;
-    }
-
-    /**
-     * Validate the fileName to detect if contains any forbidden character: / , \ , < , > ,
-     * : , " , | , ? , *
-     *
-     * @param fileName
-     * @param versionSupportsForbiddenChars
-     * @return
-     */
-    public static boolean isValidName(String fileName, boolean versionSupportsForbiddenChars) {
-        boolean result = true;
-
-        Log_OC.d(TAG, "fileName =======" + fileName);
-        if ((versionSupportsForbiddenChars && fileName.contains(PATH_SEPARATOR)) ||
-                (!versionSupportsForbiddenChars && (fileName.contains(PATH_SEPARATOR) ||
-                        fileName.contains("\\") || fileName.contains("<") || fileName.contains(">") ||
-                        fileName.contains(":") || fileName.contains("\"") || fileName.contains("|") ||
-                        fileName.contains("?") || fileName.contains("*")))) {
-
-            result = false;
-        }
-        return result;
-    }
-
-    /**
-     * Validate the path to detect if contains any forbidden character: \ , < , > , : , " , | ,
-     * ? , *
-     *
-     * @param path
-     * @return
-     */
-    public static boolean isValidPath(String path, boolean versionSupportsForbidenChars) {
-        boolean result = true;
-
-        Log_OC.d(TAG, "path ....... " + path);
-        if (!versionSupportsForbidenChars &&
-                (path.contains("\\") || path.contains("<") || path.contains(">") ||
-                        path.contains(":") || path.contains("\"") || path.contains("|") ||
-                        path.contains("?") || path.contains("*"))) {
-            result = false;
-        }
-        return result;
     }
 }
