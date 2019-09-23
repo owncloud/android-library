@@ -189,8 +189,12 @@ public class RemoteOperationResult<T>
                 try {
                     if (xmlParser.parseXMLResponse(is)) {
                         mCode = ResultCode.INVALID_CHARACTER_DETECT_IN_SERVER;
+                    } else {
+                        parseErrorMessageAndSetCode(
+                                httpMethod.getResponseBodyAsString(),
+                                ResultCode.SPECIFIC_BAD_REQUEST
+                        );
                     }
-
                 } catch (Exception e) {
                     Log_OC.w(TAG, "Error reading exception from server: " + e.getMessage());
                     // mCode stays as set in this(success, httpCode, headers)
@@ -311,13 +315,12 @@ public class RemoteOperationResult<T>
      * @throws IOException
      */
     private void parseErrorMessageAndSetCode(String bodyResponse, ResultCode resultCode) {
-
         if (bodyResponse != null && bodyResponse.length() > 0) {
             InputStream is = new ByteArrayInputStream(bodyResponse.getBytes());
             ErrorMessageParser xmlParser = new ErrorMessageParser();
             try {
                 String errorMessage = xmlParser.parseXMLResponse(is);
-                if (errorMessage != "" && errorMessage != null) {
+                if (!errorMessage.equals("")) {
                     mCode = resultCode;
                     mHttpPhrase = errorMessage;
                 }
@@ -572,6 +575,7 @@ public class RemoteOperationResult<T>
         SERVICE_UNAVAILABLE,
         SPECIFIC_SERVICE_UNAVAILABLE,
         SPECIFIC_UNSUPPORTED_MEDIA_TYPE,
-        SPECIFIC_METHOD_NOT_ALLOWED
+        SPECIFIC_METHOD_NOT_ALLOWED,
+        SPECIFIC_BAD_REQUEST
     }
 }
