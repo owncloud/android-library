@@ -16,14 +16,14 @@ allOpen {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
 
-        versionCode = 10000200
-        versionName = "1.0.2"
+        versionCode = 10000300
+        versionName = "1.0.3"
     }
 
     lintOptions {
