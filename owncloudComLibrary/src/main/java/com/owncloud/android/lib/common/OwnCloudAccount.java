@@ -151,5 +151,4 @@ public class OwnCloudAccount {
             return null;
         }
     }
-
 }
