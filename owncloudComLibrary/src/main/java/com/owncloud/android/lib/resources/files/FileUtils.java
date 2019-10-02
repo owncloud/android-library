@@ -24,6 +24,8 @@
 
 package com.owncloud.android.lib.resources.files;
 
+import com.owncloud.android.lib.common.utils.Log_OC;
+
 import java.io.File;
 
 public class FileUtils {
@@ -36,5 +38,22 @@ public class FileUtils {
         String parentPath = new File(remotePath).getParent();
         parentPath = parentPath.endsWith(PATH_SEPARATOR) ? parentPath : parentPath + PATH_SEPARATOR;
         return parentPath;
+    }
+
+    /**
+     * Validate the fileName to detect if contains any forbidden character: / , \ , < , > ,
+     * : , " , | , ? , *
+     *
+     * @param fileName
+     * @return
+     */
+    public static boolean isValidName(String fileName) {
+        boolean result = true;
+
+        Log_OC.d(TAG, "fileName =======" + fileName);
+        if (fileName.contains(PATH_SEPARATOR)) {
+            result = false;
+        }
+        return result;
     }
 }
