@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-
 apply plugin: 'kotlin-allopen'
 
 dependencies {
     api 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     api 'com.gitlab.ownclouders:dav4android:oc_support_1.0.1'
+    api 'com.github.hannesa2:Logcat:1.5.6'
 }
 
 allOpen {
@@ -16,14 +16,14 @@ allOpen {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
 
-        versionCode = 10000300
-        versionName = "1.0.3"
+        versionCode = 10000400
+        versionName = "1.0.4"
     }
 
     lintOptions {
