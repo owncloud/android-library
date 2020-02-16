@@ -1,2 +1,4 @@
+rootProject.name = 'ownCloud library'
+
 include ':owncloudComLibrary'
 include ':sample_client'
