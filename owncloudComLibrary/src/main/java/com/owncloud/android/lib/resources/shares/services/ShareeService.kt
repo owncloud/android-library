@@ -18,11 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.owncloud.android.lib.resources.status
+package com.owncloud.android.lib.resources.shares.services
 
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.Service
+import org.json.JSONObject
+import java.util.ArrayList
 
-interface CapabilityService: Service {
-    fun getCapabilities() : RemoteOperationResult<RemoteCapability>
+interface ShareeService : Service {
+    fun getSharees(
+        searchString: String,
+        page: Int,
+        perPage: Int
+    ): RemoteOperationResult<ArrayList<JSONObject>>
 }
