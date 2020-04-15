@@ -253,7 +253,9 @@ public class RemoteOperationResult<T>
                     continue;
                 }
                 if ("www-authenticate".equals(header.getKey().toLowerCase())) {
-                    mAuthenticate.add(header.getValue().get(0).toLowerCase());
+                    for (String value: header.getValue()) {
+                        mAuthenticate.add(value.toLowerCase());
+                    }
                 }
             }
         }
