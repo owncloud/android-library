@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,12 @@
 
 package com.owncloud.android.lib.common.network;
 
-import android.util.Log;
-
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
+import timber.log.Timber;
 
 import java.io.File;
 import java.util.Collection;
@@ -45,11 +44,9 @@ import java.util.Set;
  */
 public class FileRequestBody extends RequestBody implements ProgressiveDataTransferer {
 
-    private static final String TAG = FileRequestBody.class.getSimpleName();
-
     protected File mFile;
     private MediaType mContentType;
-    Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<>();
+    final Set<OnDatatransferProgressListener> mDataTransferListeners = new HashSet<>();
 
     public FileRequestBody(File file, MediaType contentType) {
         mFile = file;
@@ -87,11 +84,10 @@ public class FileRequestBody extends RequestBody implements ProgressiveDataTrans
                 }
             }
 
-            Log.d(TAG, "File with name " + mFile.getName() + " and size " + mFile.length() +
-                    " written in request body");
+            Timber.d("File with name " + mFile.getName() + " and size " + mFile.length() + " written in request body");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 

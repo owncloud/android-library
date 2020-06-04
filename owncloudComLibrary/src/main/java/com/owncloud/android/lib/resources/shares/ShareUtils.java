@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@
 
 package com.owncloud.android.lib.resources.shares;
 
-import com.owncloud.android.lib.resources.status.OwnCloudVersion;
-
 /**
  * Contains Constants for Share Operation
  *
@@ -39,14 +37,5 @@ public class ShareUtils {
     public static final String SHARING_API_PATH = "ocs/v2.php/apps/files_sharing/api/v1/shares";
 
     // String to build the link with the token of a share:
-    public static final String SHARING_LINK_PATH_BEFORE_VERSION_8 = "/public.php?service=files&t=";
-    public static final String SHARING_LINK_PATH_AFTER_VERSION_8 = "/index.php/s/";
-
-    public static String getSharingLinkPath(OwnCloudVersion version) {
-        if (version != null && version.isAfter8Version()) {
-            return SHARING_LINK_PATH_AFTER_VERSION_8;
-        } else {
-            return SHARING_LINK_PATH_BEFORE_VERSION_8;
-        }
-    }
+    public static final String SHARING_LINK_PATH = "/index.php/s/";
 }

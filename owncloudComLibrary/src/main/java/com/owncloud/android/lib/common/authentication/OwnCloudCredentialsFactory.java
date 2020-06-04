@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,6 @@ public class OwnCloudCredentialsFactory {
 
     public static OwnCloudCredentials newBasicCredentials(String username, String password) {
         return new OwnCloudBasicCredentials(username, password);
-    }
-
-    public static OwnCloudCredentials newBasicCredentials(
-            String username, String password, boolean preemptiveMode
-    ) {
-        return new OwnCloudBasicCredentials(username, password, preemptiveMode);
     }
 
     public static OwnCloudCredentials newBearerCredentials(String username, String authToken) {

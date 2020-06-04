@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -78,14 +78,18 @@ public abstract class DavMethod extends HttpBaseMethod {
                         .build();
 
             } else if (mResponse != null) {
-                ResponseBody responseBody = ResponseBody.create(
-                        mResponse.body().contentType(),
-                        httpException.getResponseBody()
-                );
+                // The check below should be included in okhttp library, method ResponseBody.create(
+                // TODO check most recent versions of okhttp to see if this is already fixed and try to update if so
+                if (mResponse.body().contentType() != null) {
+                    ResponseBody responseBody = ResponseBody.create(
+                            mResponse.body().contentType(),
+                            httpException.getResponseBody()
+                    );
 
-                mResponse = mResponse.newBuilder()
-                        .body(responseBody)
-                        .build();
+                    mResponse = mResponse.newBuilder()
+                            .body(responseBody)
+                            .build();
+                }
             }
 
             return httpException.getCode();

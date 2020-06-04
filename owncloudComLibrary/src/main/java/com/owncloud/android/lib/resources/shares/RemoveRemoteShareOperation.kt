@@ -2,7 +2,7 @@
  *   @author masensio
  *   @author David A. Velasco
  *   @author David González Verdugo
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import com.owncloud.android.lib.common.http.HttpConstants
 import com.owncloud.android.lib.common.http.methods.nonwebdav.DeleteMethod
 import com.owncloud.android.lib.common.operations.RemoteOperation
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.common.utils.Log_OC
+import timber.log.Timber
 import java.net.URL
 
 /**
@@ -75,7 +75,7 @@ class RemoveRemoteShareOperation(private val remoteShareId: Long) : RemoteOperat
                 )
                 result = parser.parse(deleteMethod.responseBodyAsString)
 
-                Log_OC.d(TAG, "Unshare " + remoteShareId + ": " + result.logMessage)
+                Timber.d("Unshare " + remoteShareId + ": " + result.logMessage)
 
             } else {
                 result = RemoteOperationResult(deleteMethod)
@@ -83,16 +83,11 @@ class RemoveRemoteShareOperation(private val remoteShareId: Long) : RemoteOperat
 
         } catch (e: Exception) {
             result = RemoteOperationResult(e)
-            Log_OC.e(TAG, "Unshare Link Exception " + result.logMessage, e)
+            Timber.e(e, "Unshare Link Exception " + result.logMessage)
         }
 
         return result
     }
 
     private fun isSuccess(status: Int): Boolean = status == HttpConstants.HTTP_OK
-
-    companion object {
-
-        private val TAG = RemoveRemoteShareOperation::class.java.simpleName
-    }
 }

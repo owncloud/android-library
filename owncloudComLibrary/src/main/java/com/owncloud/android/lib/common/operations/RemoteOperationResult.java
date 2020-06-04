@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -33,9 +33,9 @@ import com.owncloud.android.lib.common.accounts.AccountUtils;
 import com.owncloud.android.lib.common.http.HttpConstants;
 import com.owncloud.android.lib.common.http.methods.HttpBaseMethod;
 import com.owncloud.android.lib.common.network.CertificateCombinedException;
-import com.owncloud.android.lib.common.utils.Log_OC;
 import okhttp3.Headers;
 import org.json.JSONException;
+import timber.log.Timber;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -60,14 +60,13 @@ public class RemoteOperationResult<T>
      */
     private static final long serialVersionUID = 4968939884332372230L;
 
-    private static final String TAG = RemoteOperationResult.class.getSimpleName();
     private boolean mSuccess = false;
     private int mHttpCode = -1;
     private String mHttpPhrase = null;
     private Exception mException = null;
     private ResultCode mCode = ResultCode.UNKNOWN_ERROR;
     private String mRedirectedLocation;
-    private ArrayList<String> mAuthenticate = new ArrayList<>();
+    private List<String> mAuthenticate = new ArrayList<>();
     private String mLastPermanentLocation = null;
     private T mData = null;
 
@@ -189,10 +188,14 @@ public class RemoteOperationResult<T>
                 try {
                     if (xmlParser.parseXMLResponse(is)) {
                         mCode = ResultCode.INVALID_CHARACTER_DETECT_IN_SERVER;
+                    } else {
+                        parseErrorMessageAndSetCode(
+                                httpMethod.getResponseBodyAsString(),
+                                ResultCode.SPECIFIC_BAD_REQUEST
+                        );
                     }
-
                 } catch (Exception e) {
-                    Log_OC.w(TAG, "Error reading exception from server: " + e.getMessage());
+                    Timber.w("Error reading exception from server: %s", e.getMessage());
                     // mCode stays as set in this(success, httpCode, headers)
                 }
             }
@@ -250,7 +253,9 @@ public class RemoteOperationResult<T>
                     continue;
                 }
                 if ("www-authenticate".equals(header.getKey().toLowerCase())) {
-                    mAuthenticate.add(header.getValue().get(0).toLowerCase());
+                    for (String value: header.getValue()) {
+                        mAuthenticate.add(value.toLowerCase());
+                    }
                 }
             }
         }
@@ -293,11 +298,7 @@ public class RemoteOperationResult<T>
                     break;
                 default:
                     mCode = ResultCode.UNHANDLED_HTTP_CODE;         // UNKNOWN ERROR
-                    Log_OC.d(TAG,
-                            "RemoteOperationResult has processed UNHANDLED_HTTP_CODE: " +
-
-                                    mHttpCode + " " + mHttpPhrase
-                    );
+                    Timber.d("RemoteOperationResult has processed UNHANDLED_HTTP_CODE: " + mHttpCode + " " + mHttpPhrase);
             }
         }
     }
@@ -308,21 +309,19 @@ public class RemoteOperationResult<T>
      *
      * @param bodyResponse okHttp response body
      * @param resultCode   our own custom result code
-     * @throws IOException
      */
     private void parseErrorMessageAndSetCode(String bodyResponse, ResultCode resultCode) {
-
         if (bodyResponse != null && bodyResponse.length() > 0) {
             InputStream is = new ByteArrayInputStream(bodyResponse.getBytes());
             ErrorMessageParser xmlParser = new ErrorMessageParser();
             try {
                 String errorMessage = xmlParser.parseXMLResponse(is);
-                if (errorMessage != "" && errorMessage != null) {
+                if (!errorMessage.equals("")) {
                     mCode = resultCode;
                     mHttpPhrase = errorMessage;
                 }
             } catch (Exception e) {
-                Log_OC.w(TAG, "Error reading exception from server: " + e.getMessage());
+                Timber.w("Error reading exception from server: %s", e.getMessage());
                 // mCode stays as set in this(success, httpCode, headers)
             }
         }
@@ -376,7 +375,7 @@ public class RemoteOperationResult<T>
             previousCause = cause;
             cause = cause.getCause();
         }
-        if (cause != null && cause instanceof CertificateCombinedException) {
+        if (cause instanceof CertificateCombinedException) {
             result = (CertificateCombinedException) cause;
         }
         return result;
@@ -497,7 +496,7 @@ public class RemoteOperationResult<T>
         return (mRedirectedLocation != null && !(mRedirectedLocation.toLowerCase().startsWith("https://")));
     }
 
-    public ArrayList<String> getAuthenticateHeaders() {
+    public List<String> getAuthenticateHeaders() {
         return mAuthenticate;
     }
 
@@ -572,6 +571,7 @@ public class RemoteOperationResult<T>
         SERVICE_UNAVAILABLE,
         SPECIFIC_SERVICE_UNAVAILABLE,
         SPECIFIC_UNSUPPORTED_MEDIA_TYPE,
-        SPECIFIC_METHOD_NOT_ALLOWED
+        SPECIFIC_METHOD_NOT_ALLOWED,
+        SPECIFIC_BAD_REQUEST
     }
 }

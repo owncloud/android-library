@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,6 @@ import okhttp3.Credentials;
 import okhttp3.internal.Util;
 
 public class OwnCloudBasicCredentials implements OwnCloudCredentials {
-
-    private static final String TAG = OwnCloudCredentials.class.getSimpleName();
 
     private String mUsername;
     private String mPassword;

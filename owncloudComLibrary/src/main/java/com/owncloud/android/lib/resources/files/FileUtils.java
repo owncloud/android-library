@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,15 @@
 
 package com.owncloud.android.lib.resources.files;
 
-import com.owncloud.android.lib.common.utils.Log_OC;
+import timber.log.Timber;
 
 import java.io.File;
 
 public class FileUtils {
-
     public static final String PATH_SEPARATOR = "/";
     public static final String FINAL_CHUNKS_FILE = ".file";
-    private static final String TAG = FileUtils.class.getSimpleName();
 
-    public static String getParentPath(String remotePath) {
+    static String getParentPath(String remotePath) {
         String parentPath = new File(remotePath).getParent();
         parentPath = parentPath.endsWith(PATH_SEPARATOR) ? parentPath : parentPath + PATH_SEPARATOR;
         return parentPath;
@@ -45,40 +43,13 @@ public class FileUtils {
      * : , " , | , ? , *
      *
      * @param fileName
-     * @param versionSupportsForbiddenChars
      * @return
      */
-    public static boolean isValidName(String fileName, boolean versionSupportsForbiddenChars) {
+    public static boolean isValidName(String fileName) {
         boolean result = true;
 
-        Log_OC.d(TAG, "fileName =======" + fileName);
-        if ((versionSupportsForbiddenChars && fileName.contains(PATH_SEPARATOR)) ||
-                (!versionSupportsForbiddenChars && (fileName.contains(PATH_SEPARATOR) ||
-                        fileName.contains("\\") || fileName.contains("<") || fileName.contains(">") ||
-                        fileName.contains(":") || fileName.contains("\"") || fileName.contains("|") ||
-                        fileName.contains("?") || fileName.contains("*")))) {
-
-            result = false;
-        }
-        return result;
-    }
-
-    /**
-     * Validate the path to detect if contains any forbidden character: \ , < , > , : , " , | ,
-     * ? , *
-     *
-     * @param path
-     * @return
-     */
-    public static boolean isValidPath(String path, boolean versionSupportsForbidenChars) {
-        boolean result = true;
-
-        Log_OC.d(TAG, "path ....... " + path);
-        if (!versionSupportsForbidenChars &&
-                (path.contains("\\") || path.contains("<") || path.contains(">") ||
-                        path.contains(":") || path.contains("\"") || path.contains("|") ||
-                        path.contains("?") || path.contains("*"))) {
-
+        Timber.d("fileName =======%s", fileName);
+        if (fileName.contains(PATH_SEPARATOR)) {
             result = false;
         }
         return result;

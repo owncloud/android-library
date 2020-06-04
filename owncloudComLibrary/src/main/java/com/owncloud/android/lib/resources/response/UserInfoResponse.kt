@@ -1,7 +1,6 @@
 /* ownCloud Android Library is available under MIT license
  *
- *   @author David A. Velasco
- *   Copyright (C) 2017 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -21,26 +20,23 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
+package com.owncloud.android.lib.resources.response
 
-package com.owncloud.android.lib.common.authentication.oauth;
+import com.owncloud.android.lib.resources.users.RemoteUserInfo
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-public enum OAuth2GrantType {
-    AUTHORIZATION_CODE("authorization_code"),
-    IMPLICIT("implicit"),
-    PASSWORD("password"),
-    CLIENT_CREDENTIAL("client_credentials"),
-    REFRESH_TOKEN("refresh_token")  // not a grant type conceptually, but used as such to refresh access tokens
-    ;
-
-    private String mValue;
-
-    OAuth2GrantType(String value) {
-        mValue = value;
-    }
-
-    public String getValue() {
-        return mValue;
-    }
+@JsonClass(generateAdapter = true)
+data class UserInfoResponse(
+    val id: String,
+    @Json(name = "display-name")
+    val displayName: String,
+    val email: String?
+) {
+    fun toRemoteUserInfo() = RemoteUserInfo(
+        id = id,
+        displayName = displayName,
+        email = email
+    )
 }

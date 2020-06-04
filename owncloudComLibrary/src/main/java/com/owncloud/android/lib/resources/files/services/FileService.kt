@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -21,32 +21,11 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.resources.files.services
 
-package com.owncloud.android.lib.common;
+import com.owncloud.android.lib.common.operations.RemoteOperationResult
+import com.owncloud.android.lib.resources.Service
 
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
-import android.content.Context;
-
-import com.owncloud.android.lib.common.accounts.AccountUtils.AccountNotFoundException;
-
-import java.io.IOException;
-
-/**
- * Manager to create and reuse OwnCloudClient instances to access remote OC servers.
- *
- * @author David A. Velasco
- * @author masensio
- * @author Christian Schabesberger
- */
-
-public interface OwnCloudClientManager {
-
-    OwnCloudClient getClientFor(OwnCloudAccount account, Context context) throws AccountNotFoundException,
-            OperationCanceledException, AuthenticatorException, IOException;
-
-    OwnCloudClient removeClientFor(OwnCloudAccount account);
-
-    void saveAllClients(Context context, String accountType) throws AccountNotFoundException, AuthenticatorException, IOException,
-            OperationCanceledException;
+interface FileService: Service {
+    fun checkPathExistence(path: String, isUserLogged: Boolean): RemoteOperationResult<Boolean>
 }

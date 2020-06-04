@@ -1,7 +1,7 @@
 /* ownCloud Android Library is available under MIT license
  *   @author David A. Velasco
  *   @author David González Verdugo
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ import com.owncloud.android.lib.common.http.HttpConstants;
 import com.owncloud.android.lib.common.http.methods.nonwebdav.GetMethod;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
-import com.owncloud.android.lib.common.utils.Log_OC;
+import timber.log.Timber;
 
 import java.net.URL;
 
@@ -45,8 +45,6 @@ import java.net.URL;
  */
 
 public class GetRemoteShareOperation extends RemoteOperation<ShareParserResult> {
-
-    private static final String TAG = GetRemoteShareOperation.class.getSimpleName();
 
     private long mRemoteId;
 
@@ -85,7 +83,7 @@ public class GetRemoteShareOperation extends RemoteOperation<ShareParserResult> 
 
         } catch (Exception e) {
             result = new RemoteOperationResult<>(e);
-            Log_OC.e(TAG, "Exception while getting remote shares ", e);
+            Timber.e(e, "Exception while getting remote shares");
         }
         return result;
     }

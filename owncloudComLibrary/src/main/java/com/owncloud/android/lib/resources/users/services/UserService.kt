@@ -1,7 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *
- *   @author David A. Velasco
- *   Copyright (C) 2017 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -24,25 +22,12 @@
  *
  */
 
-package com.owncloud.android.lib.common.authentication.oauth;
+package com.owncloud.android.lib.resources.users.services
 
-import com.owncloud.android.lib.common.operations.RemoteOperation;
+import com.owncloud.android.lib.common.operations.RemoteOperationResult
+import com.owncloud.android.lib.resources.Service
+import com.owncloud.android.lib.resources.users.RemoteUserInfo
 
-public interface OAuth2RequestBuilder {
-
-    void setRequest(OAuthRequest operation);
-
-    void setGrantType(OAuth2GrantType grantType);
-
-    void setAuthorizationCode(String code);
-
-    void setRefreshToken(String refreshToken);
-
-    RemoteOperation buildOperation();
-
-    String buildUri();
-
-    enum OAuthRequest {
-        GET_AUTHORIZATION_CODE, CREATE_ACCESS_TOKEN, REFRESH_ACCESS_TOKEN
-    }
+interface UserService: Service {
+    fun getUserInfo() : RemoteOperationResult<RemoteUserInfo>
 }

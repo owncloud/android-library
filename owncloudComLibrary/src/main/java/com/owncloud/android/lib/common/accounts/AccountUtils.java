@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *   Copyright (C) 2012  Bartek Przybylski
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,19 +36,16 @@ import android.net.Uri;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.authentication.OwnCloudCredentials;
 import com.owncloud.android.lib.common.authentication.OwnCloudCredentialsFactory;
-import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.lib.resources.files.FileUtils;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
 import okhttp3.Cookie;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AccountUtils {
-
-    private static final String TAG = AccountUtils.class.getSimpleName();
-
     /**
      * Constructs full url to host and webdav resource basing on host version
      *
@@ -66,7 +63,7 @@ public class AccountUtils {
             webDavUrlForAccount = getBaseUrlForAccount(context, account) + OwnCloudClient.WEBDAV_FILES_PATH_4_0
                     + ownCloudCredentials.getUsername();
         } catch (OperationCanceledException | AuthenticatorException | IOException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
         return webDavUrlForAccount;
@@ -104,7 +101,7 @@ public class AccountUtils {
         try {
             username = account.name.substring(0, account.name.lastIndexOf('@'));
         } catch (Exception e) {
-            Log_OC.e(TAG, "Couldn't get a username for the given account", e);
+            Timber.e(e, "Couldn't get a username for the given account");
         }
         return username;
     }
@@ -124,7 +121,7 @@ public class AccountUtils {
             version = new OwnCloudVersion(versionString);
 
         } catch (Exception e) {
-            Log_OC.e(TAG, "Couldn't get a the server version for an account", e);
+            Timber.e(e, "Couldn't get a the server version for an account");
         }
         return version;
     }
@@ -142,10 +139,9 @@ public class AccountUtils {
         AccountManager am = AccountManager.get(context);
 
         String supportsOAuth2 = am.getUserData(account, AccountUtils.Constants.KEY_SUPPORTS_OAUTH2);
-        boolean isOauth2 = supportsOAuth2 != null && supportsOAuth2.equals("TRUE");
+        boolean isOauth2 = supportsOAuth2 != null && supportsOAuth2.equals(Constants.OAUTH_SUPPORTED_TRUE);
 
         String username = AccountUtils.getUsernameForAccount(account);
-        OwnCloudVersion version = new OwnCloudVersion(am.getUserData(account, Constants.KEY_OC_VERSION));
 
         if (isOauth2) {
             String accessToken = am.blockingGetAuthToken(
@@ -154,7 +150,6 @@ public class AccountUtils {
                     false);
 
             credentials = OwnCloudCredentialsFactory.newBearerCredentials(username, accessToken);
-
         } else {
             String password = am.blockingGetAuthToken(
                     account,
@@ -163,8 +158,7 @@ public class AccountUtils {
 
             credentials = OwnCloudCredentialsFactory.newBasicCredentials(
                     username,
-                    password,
-                    version.isPreemptiveAuthenticationPreferred()
+                    password
             );
         }
 
@@ -203,9 +197,8 @@ public class AccountUtils {
         if (url.contains("://")) {
             url = url.substring(serverBaseUrl.toString().indexOf("://") + 3);
         }
-        String accountName = username + "@" + url;
 
-        return accountName;
+        return username + "@" + url;
     }
 
     public static void saveClient(OwnCloudClient client, Account savedAccount, Context context) {
@@ -216,7 +209,7 @@ public class AccountUtils {
             String cookiesString = client.getCookiesString();
             if (!"".equals(cookiesString)) {
                 ac.setUserData(savedAccount, Constants.KEY_COOKIES, cookiesString);
-                Log_OC.d(TAG, "Saving Cookies: " + cookiesString);
+                Timber.d("Saving Cookies: %s", cookiesString);
             }
         }
     }
@@ -230,10 +223,10 @@ public class AccountUtils {
      */
     public static void restoreCookies(Account account, OwnCloudClient client, Context context) {
         if (account == null) {
-            Log_OC.d(TAG, "Cannot restore cookie for null account");
+            Timber.d("Cannot restore cookie for null account");
 
         } else {
-            Log_OC.d(TAG, "Restoring cookies for " + account.name);
+            Timber.d("Restoring cookies for %s", account.name);
 
             // Account Manager
             AccountManager am = AccountManager.get(context.getApplicationContext());
@@ -299,7 +292,11 @@ public class AccountUtils {
         /**
          * Flag signaling if the ownCloud server can be accessed with OAuth2 access tokens.
          */
+
+        // TODO Please review this constants, move them out of the library, the rest of OAuth variables are in data layer
         public static final String KEY_SUPPORTS_OAUTH2 = "oc_supports_oauth2";
+
+        public static final String OAUTH_SUPPORTED_TRUE = "TRUE";
 
         /**
          * OC account cookies
@@ -321,9 +318,6 @@ public class AccountUtils {
          */
         public static final String KEY_DISPLAY_NAME = "oc_display_name";
 
-        /**
-         * OAuth2 refresh token
-         **/
-        public static final String KEY_OAUTH2_REFRESH_TOKEN = "oc_oauth2_refresh_token";
+        public static final int ACCOUNT_VERSION = 1;
     }
 }

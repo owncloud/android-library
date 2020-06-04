@@ -2,7 +2,7 @@
  *   @author masensio
  *   @author David González Verdugo
  *   @author Abel García de Prada
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -42,9 +42,11 @@ data class RemoteCapability(
     // Core PollInterval
     var corePollinterval: Int = 0,
 
+    // Dav Capabilities
+    val chunkingVersion: String = "",
+
     // Files Sharing
     var filesSharingApiEnabled: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
-    var filesSharingSearchMinLength: Int? = DEFAULT_MIN_CHARACTERS_TO_SEARCH,
     var filesSharingPublicEnabled: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingPublicPasswordEnforced: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingPublicPasswordEnforcedReadOnly: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
@@ -53,11 +55,9 @@ data class RemoteCapability(
     var filesSharingPublicExpireDateEnabled: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingPublicExpireDateDays: Int = 0,
     var filesSharingPublicExpireDateEnforced: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
-    var filesSharingPublicSendMail: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingPublicUpload: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingPublicMultiple: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingPublicSupportsUploadOnly: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
-    var filesSharingUserSendMail: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingResharing: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingFederationOutgoing: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
     var filesSharingFederationIncoming: CapabilityBooleanType = CapabilityBooleanType.UNKNOWN,
@@ -88,17 +88,13 @@ data class RemoteCapability(
                 }
             }
 
-            fun fromBooleanValue(boolValue: Boolean): CapabilityBooleanType {
-                return if (boolValue) {
+            fun fromBooleanValue(boolValue: Boolean?): CapabilityBooleanType {
+                return if (boolValue != null && boolValue) {
                     TRUE
                 } else {
                     FALSE
                 }
             }
         }
-    }
-
-    companion object {
-        private const val DEFAULT_MIN_CHARACTERS_TO_SEARCH = 2
     }
 }

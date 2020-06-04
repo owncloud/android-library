@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,6 @@ import android.net.Uri;
 
 public class OwnCloudClientFactory {
 
-    final private static String TAG = OwnCloudClientFactory.class.getSimpleName();
-
     /**
      * Creates a OwnCloudClient to access a URL and sets the desired parameters for ownCloud
      * client connections.
@@ -39,8 +37,7 @@ public class OwnCloudClientFactory {
      * @param context Android context where the OwnCloudClient is being created.
      * @return A OwnCloudClient object ready to be used
      */
-    public static OwnCloudClient createOwnCloudClient(Uri uri, Context context,
-                                                      boolean followRedirects) {
+    public static OwnCloudClient createOwnCloudClient(Uri uri, Context context, boolean followRedirects) {
         OwnCloudClient client = new OwnCloudClient(uri);
 
         client.setFollowRedirects(followRedirects);

@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package com.owncloud.android.lib.resources.files;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.http.HttpConstants;
@@ -34,7 +33,7 @@ import com.owncloud.android.lib.common.network.WebdavUtils;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult.ResultCode;
-import com.owncloud.android.lib.resources.status.OwnCloudVersion;
+import timber.log.Timber;
 
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +48,6 @@ import java.util.concurrent.TimeUnit;
  * @author David González Verdugo
  */
 public class MoveRemoteFileOperation extends RemoteOperation {
-
-    private static final String TAG = MoveRemoteFileOperation.class.getSimpleName();
 
     private static final int MOVE_READ_TIMEOUT = 600000;
     private static final int MOVE_CONNECTION_TIMEOUT = 5000;
@@ -87,16 +84,6 @@ public class MoveRemoteFileOperation extends RemoteOperation {
      */
     @Override
     protected RemoteOperationResult run(OwnCloudClient client) {
-
-        OwnCloudVersion version = client.getOwnCloudVersion();
-        boolean versionWithForbiddenChars =
-                (version != null && version.isVersionWithForbiddenCharacters());
-
-        /// check parameters
-        if (!FileUtils.isValidPath(mTargetRemotePath, versionWithForbiddenChars)) {
-            return new RemoteOperationResult<>(ResultCode.INVALID_CHARACTER_IN_NAME);
-        }
-
         if (mTargetRemotePath.equals(mSrcRemotePath)) {
             // nothing to do!
             return new RemoteOperationResult<>(ResultCode.OK);
@@ -143,13 +130,11 @@ public class MoveRemoteFileOperation extends RemoteOperation {
                 client.exhaustResponse(move.getResponseBodyAsStream());
             }
 
-            Log.i(TAG, "Move " + mSrcRemotePath + " to " + mTargetRemotePath + ": " +
-                    result.getLogMessage());
+            Timber.i("Move " + mSrcRemotePath + " to " + mTargetRemotePath + ": " + result.getLogMessage());
 
         } catch (Exception e) {
             result = new RemoteOperationResult<>(e);
-            Log.e(TAG, "Move " + mSrcRemotePath + " to " + mTargetRemotePath + ": " +
-                    result.getLogMessage(), e);
+            Timber.e(e, "Move " + mSrcRemotePath + " to " + mTargetRemotePath + ": " + result.getLogMessage());
         }
 
         return result;

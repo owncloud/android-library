@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -30,11 +30,10 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import com.owncloud.android.lib.common.accounts.AccountUtils;
 import com.owncloud.android.lib.common.http.HttpClient;
-import com.owncloud.android.lib.common.utils.Log_OC;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -42,31 +41,39 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Implementation of {@link OwnCloudClientManager}
- * <p>
- * TODO check multithreading safety
- *
  * @author David A. Velasco
  * @author masensio
  * @author Christian Schabesberger
  * @author David González Verdugo
  */
 
-public class SingleSessionManager implements OwnCloudClientManager {
+public class SingleSessionManager {
 
-    private static final String TAG = SingleSessionManager.class.getSimpleName();
+    private static SingleSessionManager sDefaultSingleton;
+    private static String sUserAgent;
 
     private ConcurrentMap<String, OwnCloudClient> mClientsWithKnownUsername = new ConcurrentHashMap<>();
-
     private ConcurrentMap<String, OwnCloudClient> mClientsWithUnknownUsername = new ConcurrentHashMap<>();
 
-    @Override
+    public static SingleSessionManager getDefaultSingleton() {
+        if (sDefaultSingleton == null) {
+            sDefaultSingleton = new SingleSessionManager();
+        }
+        return sDefaultSingleton;
+    }
+
+    public static String getUserAgent() {
+        return sUserAgent;
+    }
+
+    public static void setUserAgent(String userAgent) {
+        sUserAgent = userAgent;
+    }
+
     public OwnCloudClient getClientFor(OwnCloudAccount account, Context context) throws OperationCanceledException,
             AuthenticatorException, IOException {
 
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log_OC.d(TAG, "getClientFor starting ");
-        }
+        Timber.d("getClientFor starting ");
         if (account == null) {
             throw new IllegalArgumentException("Cannot get an OwnCloudClient for a null account");
         }
@@ -84,21 +91,16 @@ public class SingleSessionManager implements OwnCloudClientManager {
             if (accountName != null) {
                 client = mClientsWithUnknownUsername.remove(sessionName);
                 if (client != null) {
-                    if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                        Log_OC.v(TAG, "reusing client for session " + sessionName);
-                    }
+                    Timber.v("reusing client for session %s", sessionName);
+
                     mClientsWithKnownUsername.put(accountName, client);
-                    if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                        Log_OC.v(TAG, "moved client to account " + accountName);
-                    }
+                    Timber.v("moved client to account %s", accountName);
                 }
             } else {
                 client = mClientsWithUnknownUsername.get(sessionName);
             }
         } else {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log_OC.v(TAG, "reusing client for account " + accountName);
-            }
+            Timber.v("reusing client for account %s", accountName);
             reusingKnown = true;
         }
 
@@ -110,47 +112,36 @@ public class SingleSessionManager implements OwnCloudClientManager {
                     true);    // TODO remove dependency on OwnCloudClientFactory
             client.setAccount(account);
             HttpClient.setContext(context);
-            client.setOwnCloudClientManager(this);
 
             account.loadCredentials(context);
             client.setCredentials(account.getCredentials());
 
             if (accountName != null) {
                 mClientsWithKnownUsername.put(accountName, client);
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log_OC.v(TAG, "new client for account " + accountName);
-                }
+                Timber.v("new client for account %s", accountName);
 
             } else {
                 mClientsWithUnknownUsername.put(sessionName, client);
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log_OC.v(TAG, "new client for session " + sessionName);
-                }
+                Timber.v("new client for session %s", sessionName);
             }
         } else {
-            if (!reusingKnown && Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log_OC.v(TAG, "reusing client for session " + sessionName);
+            if (!reusingKnown) {
+                Timber.v("reusing client for session %s", sessionName);
             }
 
             keepCredentialsUpdated(client);
             keepCookiesUpdated(context, account, client);
             keepUriUpdated(account, client);
         }
-
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log_OC.d(TAG, "getClientFor finishing ");
-        }
+        Timber.d("getClientFor finishing ");
         return client;
     }
 
-    @Override
-    public OwnCloudClient removeClientFor(OwnCloudAccount account) {
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log_OC.d(TAG, "removeClientFor starting ");
-        }
+    public void removeClientFor(OwnCloudAccount account) {
+        Timber.d("removeClientFor starting ");
 
         if (account == null) {
-            return null;
+            return;
         }
 
         OwnCloudClient client;
@@ -158,31 +149,20 @@ public class SingleSessionManager implements OwnCloudClientManager {
         if (accountName != null) {
             client = mClientsWithKnownUsername.remove(accountName);
             if (client != null) {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log_OC.v(TAG, "Removed client for account " + accountName);
-                }
-                return client;
+                Timber.v("Removed client for account %s", accountName);
+                return;
             } else {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log_OC.v(TAG, "No client tracked for  account " + accountName);
-                }
+                Timber.v("No client tracked for  account %s", accountName);
             }
         }
 
         mClientsWithUnknownUsername.clear();
 
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log_OC.d(TAG, "removeClientFor finishing ");
-        }
-        return null;
+        Timber.d("removeClientFor finishing ");
     }
 
-    @Override
     public void saveAllClients(Context context, String accountType) {
-
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log_OC.d(TAG, "Saving sessions... ");
-        }
+        Timber.d("Saving sessions... ");
 
         Iterator<String> accountNames = mClientsWithKnownUsername.keySet().iterator();
         String accountName;
@@ -193,9 +173,7 @@ public class SingleSessionManager implements OwnCloudClientManager {
             AccountUtils.saveClient(mClientsWithKnownUsername.get(accountName), account, context);
         }
 
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log_OC.d(TAG, "All sessions saved");
-        }
+        Timber.d("All sessions saved");
     }
 
     private void keepCredentialsUpdated(OwnCloudClient reusedClient) {

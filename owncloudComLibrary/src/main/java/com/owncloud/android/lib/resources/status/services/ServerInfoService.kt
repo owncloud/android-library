@@ -1,7 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *
- *   @author David A. Velasco
- *   Copyright (C) 2017 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +21,13 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.resources.status.services
 
-package com.owncloud.android.lib.common.authentication.oauth;
+import com.owncloud.android.lib.common.operations.RemoteOperationResult
+import com.owncloud.android.lib.resources.status.OwnCloudVersion
 
-public class OAuth2ClientConfiguration {
+interface ServerInfoService {
+    fun checkPathExistence(path: String, isUserLogged: Boolean): RemoteOperationResult<Boolean>
 
-    private String mClientId;
-
-    private String mClientSecret;
-
-    private String mRedirectUri;
-
-    public OAuth2ClientConfiguration(String clientId, String clientSecret, String redirectUri) {
-        mClientId = (clientId == null) ? "" : clientId;
-        mClientSecret = (clientSecret == null) ? "" : clientSecret;
-        mRedirectUri = (redirectUri == null) ? "" : redirectUri;
-    }
-
-    public String getClientId() {
-        return mClientId;
-    }
-
-    public void setClientId(String clientId) {
-        mClientId = (clientId == null) ? "" : clientId;
-    }
-
-    public String getClientSecret() {
-        return mClientSecret;
-    }
-
-    public void setClientSecret(String clientSecret) {
-        mClientSecret = (clientSecret == null) ? "" : clientSecret;
-    }
-
-    public String getRedirectUri() {
-        return mRedirectUri;
-    }
-
-    public void setRedirectUri(String redirectUri) {
-        this.mRedirectUri = (redirectUri == null) ? "" : redirectUri;
-    }
+    fun getRemoteStatus(path: String): RemoteOperationResult<OwnCloudVersion>
 }

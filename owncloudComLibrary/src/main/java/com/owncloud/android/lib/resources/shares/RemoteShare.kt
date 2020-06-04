@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2019 ownCloud GmbH.
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,8 @@ data class RemoteShare(
     var sharedWithAdditionalInfo: String = "",
     var name: String = "",
     var shareLink: String = "",
-    var fileSource: Long = 0,
-    var itemSource: Long = 0,
+    var fileSource: String = "0",
+    var itemSource: String = "0",
     var shareType: ShareType? = ShareType.UNKNOWN,
     var permissions: Int = DEFAULT_PERMISSION,
     var sharedDate: Long = INIT_SHARED_DATE,
@@ -66,16 +66,14 @@ data class RemoteShare(
         const val MAXIMUM_PERMISSIONS_FOR_FOLDER = MAXIMUM_PERMISSIONS_FOR_FILE +
                 CREATE_PERMISSION_FLAG +
                 DELETE_PERMISSION_FLAG
-        const val FEDERATED_PERMISSIONS_FOR_FILE_UP_TO_OC9 = READ_PERMISSION_FLAG + UPDATE_PERMISSION_FLAG
-        const val FEDERATED_PERMISSIONS_FOR_FILE_AFTER_OC9 = READ_PERMISSION_FLAG +
+        const val FEDERATED_PERMISSIONS_FOR_FILE = READ_PERMISSION_FLAG +
                 UPDATE_PERMISSION_FLAG +
                 SHARE_PERMISSION_FLAG
-        const val FEDERATED_PERMISSIONS_FOR_FOLDER_UP_TO_OC9 = READ_PERMISSION_FLAG +
+        const val FEDERATED_PERMISSIONS_FOR_FOLDER = READ_PERMISSION_FLAG +
                 UPDATE_PERMISSION_FLAG +
                 CREATE_PERMISSION_FLAG +
-                DELETE_PERMISSION_FLAG
-        const val FEDERATED_PERMISSIONS_FOR_FOLDER_AFTER_OC9 =
-            FEDERATED_PERMISSIONS_FOR_FOLDER_UP_TO_OC9 + SHARE_PERMISSION_FLAG
+                DELETE_PERMISSION_FLAG +
+                SHARE_PERMISSION_FLAG
 
         const val INIT_EXPIRATION_DATE_IN_MILLIS: Long = 0
         const val INIT_SHARED_DATE: Long = 0
