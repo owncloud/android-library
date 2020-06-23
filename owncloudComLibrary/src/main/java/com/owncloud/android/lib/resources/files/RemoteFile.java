@@ -75,6 +75,7 @@ public class RemoteFile implements Parcelable, Serializable {
     private BigDecimal mQuotaUsedBytes;
     private BigDecimal mQuotaAvailableBytes;
     private String mPrivateLink;
+    private String mOwner;
 
     public RemoteFile() {
         resetData();
@@ -245,6 +246,14 @@ public class RemoteFile implements Parcelable, Serializable {
 
     public void setPrivateLink(String privateLink) {
         mPrivateLink = privateLink;
+    }
+
+    public String getOwner() {
+        return mOwner;
+    }
+
+    public void setOwner(String owner) {
+        mOwner = owner;
     }
 
     /**
