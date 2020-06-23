@@ -22,13 +22,18 @@ package com.owncloud.android.lib.resources.files.services.implementation
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.files.CheckPathExistenceRemoteOperation
+import com.owncloud.android.lib.resources.files.ReadRemoteFolderOperation
+import com.owncloud.android.lib.resources.files.RemoteFile
 import com.owncloud.android.lib.resources.files.services.FileService
 
-class OCFileService(override val client: OwnCloudClient) :
-    FileService {
+class OCFileService(override val client: OwnCloudClient) : FileService {
     override fun checkPathExistence(path: String, isUserLogged: Boolean): RemoteOperationResult<Boolean> =
         CheckPathExistenceRemoteOperation(
             remotePath = path,
             isUserLogged = isUserLogged
         ).execute(client)
+
+    override fun refreshFolder(remotePath: String): RemoteOperationResult<ArrayList<RemoteFile>> {
+        return ReadRemoteFolderOperation(remotePath = remotePath).execute(client)
+    }
 }
