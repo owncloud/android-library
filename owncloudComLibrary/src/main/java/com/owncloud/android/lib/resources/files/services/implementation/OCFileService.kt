@@ -37,7 +37,9 @@ class OCFileService(override val client: OwnCloudClient) : FileService {
             isUserLoggedIn = isUserLogged
         ).execute(client)
 
-    override fun refreshFolder(remotePath: String): RemoteOperationResult<ArrayList<RemoteFile>> {
-        return ReadRemoteFolderOperation(remotePath = remotePath).execute(client)
-    }
+    override fun refreshFolder(remotePath: String): RemoteOperationResult<ArrayList<RemoteFile>> =
+        ReadRemoteFolderOperation(
+            remotePath = remotePath
+        ).execute(client)
+
 }
