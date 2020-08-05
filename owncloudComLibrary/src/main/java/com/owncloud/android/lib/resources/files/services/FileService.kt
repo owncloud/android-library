@@ -27,8 +27,20 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.Service
 import com.owncloud.android.lib.resources.files.RemoteFile
 
-interface FileService: Service {
-    fun checkPathExistence(path: String, isUserLogged: Boolean): RemoteOperationResult<Boolean>
-    fun createFolder(remotePath: String, createFullPath: Boolean, isChunkFolder: Boolean = false): RemoteOperationResult<Unit>
-    fun refreshFolder(remotePath: String): RemoteOperationResult<ArrayList<RemoteFile>>
+interface FileService : Service {
+
+    fun checkPathExistence(
+        path: String,
+        isUserLogged: Boolean
+    ): RemoteOperationResult<Boolean>
+
+    fun createFolder(
+        remotePath: String,
+        createFullPath: Boolean,
+        isChunkFolder: Boolean = false
+    ): RemoteOperationResult<Unit>
+
+    fun refreshFolder(
+        remotePath: String
+    ): RemoteOperationResult<ArrayList<RemoteFile>>
 }
