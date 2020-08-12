@@ -21,34 +21,26 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.common.http.methods.nonwebdav
 
-package com.owncloud.android.lib.common.http.interceptors;
-
-import okhttp3.Request;
+import okhttp3.RequestBody
+import java.io.IOException
+import java.net.URL
 
 /**
- * Intercept requests to update their headers
+ * OkHttp post calls wrapper
+ *
+ * @author David González Verdugo
  */
-public class RequestHeaderInterceptor implements HttpInterceptor.RequestInterceptor {
-
-    private String mHeaderName;
-    private String mHeaderValue;
-
-    public RequestHeaderInterceptor(String headerName, String headerValue) {
-        this.mHeaderName = headerName;
-        this.mHeaderValue = headerValue;
-    }
-
-    @Override
-    public Request intercept(Request request) {
-        return request.newBuilder().addHeader(mHeaderName, mHeaderValue).build();
-    }
-
-    public String getHeaderName() {
-        return mHeaderName;
-    }
-
-    public String getHeaderValue() {
-        return mHeaderValue;
+class PostMethod(
+    url: URL,
+    private val postRequestBody: RequestBody
+) : HttpMethod(url) {
+    @Throws(IOException::class)
+    override fun onExecute(): Int {
+        request = request.newBuilder()
+            .post(postRequestBody)
+            .build()
+        return super.onExecute()
     }
 }

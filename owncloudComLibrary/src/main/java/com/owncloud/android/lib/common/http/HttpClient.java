@@ -26,9 +26,6 @@ package com.owncloud.android.lib.common.http;
 
 import android.content.Context;
 
-import com.owncloud.android.lib.common.SingleSessionManager;
-import com.owncloud.android.lib.common.http.interceptors.HttpInterceptor;
-import com.owncloud.android.lib.common.http.interceptors.RequestHeaderInterceptor;
 import com.owncloud.android.lib.common.network.AdvancedX509TrustManager;
 import com.owncloud.android.lib.common.network.NetworkUtils;
 import okhttp3.Cookie;
@@ -58,7 +55,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class HttpClient {
     private static OkHttpClient sOkHttpClient;
-    private static HttpInterceptor sOkHttpInterceptor;
     private static Context sContext;
     private static HashMap<String, List<Cookie>> sCookieStore = new HashMap<>();
 
@@ -71,16 +67,21 @@ public class HttpClient {
                 SSLContext sslContext;
 
                 try {
-                    sslContext = SSLContext.getInstance("TLSv1.2");
-                } catch (NoSuchAlgorithmException tlsv12Exception) {
+                    sslContext = SSLContext.getInstance("TLSv1.3");
+                } catch (NoSuchAlgorithmException tlsv13Exception) {
                     try {
-                        Timber.w("TLSv1.2 is not supported in this device; falling through TLSv1.1");
-                        sslContext = SSLContext.getInstance("TLSv1.1");
-                    } catch (NoSuchAlgorithmException tlsv11Exception) {
-                        Timber.w("TLSv1.1 is not supported in this device; falling through TLSv1.0");
-                        sslContext = SSLContext.getInstance("TLSv1");
-                        // should be available in any device; see reference of supported protocols in
-                        // http://developer.android.com/reference/javax/net/ssl/SSLSocket.html
+                        Timber.w("TLSv1.3 is not supported in this device; falling through TLSv1.2");
+                        sslContext = SSLContext.getInstance("TLSv1.2");
+                    } catch (NoSuchAlgorithmException tlsv12Exception) {
+                        try {
+                            Timber.w("TLSv1.2 is not supported in this device; falling through TLSv1.1");
+                            sslContext = SSLContext.getInstance("TLSv1.1");
+                        } catch (NoSuchAlgorithmException tlsv11Exception) {
+                            Timber.w("TLSv1.1 is not supported in this device; falling through TLSv1.0");
+                            sslContext = SSLContext.getInstance("TLSv1");
+                            // should be available in any device; see reference of supported protocols in
+                            // http://developer.android.com/reference/javax/net/ssl/SSLSocket.html
+                        }
                     }
                 }
 
@@ -109,7 +110,6 @@ public class HttpClient {
                 };
 
                 OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                        .addInterceptor(getOkHttpInterceptor())
                         .protocols(Arrays.asList(Protocol.HTTP_1_1))
                         .readTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
                         .writeTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -127,36 +127,6 @@ public class HttpClient {
             }
         }
         return sOkHttpClient;
-    }
-
-    private static HttpInterceptor getOkHttpInterceptor() {
-        if (sOkHttpInterceptor == null) {
-            sOkHttpInterceptor = new HttpInterceptor();
-            addHeaderForAllRequests(HttpConstants.USER_AGENT_HEADER, SingleSessionManager.getUserAgent());
-            addHeaderForAllRequests(HttpConstants.PARAM_SINGLE_COOKIE_HEADER, "true");
-            addHeaderForAllRequests(HttpConstants.ACCEPT_ENCODING_HEADER, HttpConstants.ACCEPT_ENCODING_IDENTITY);
-        }
-        return sOkHttpInterceptor;
-    }
-
-    /**
-     * Add header that will be included for all the requests from now on
-     *
-     * @param headerName
-     * @param headerValue
-     */
-    public static void addHeaderForAllRequests(String headerName, String headerValue) {
-        HttpInterceptor httpInterceptor = getOkHttpInterceptor();
-
-        if (getOkHttpInterceptor() != null) {
-            httpInterceptor.addRequestInterceptor(
-                    new RequestHeaderInterceptor(headerName, headerValue)
-            );
-        }
-    }
-
-    public static void deleteHeaderForAllRequests(String headerName) {
-        getOkHttpInterceptor().deleteRequestHeaderInterceptor(headerName);
     }
 
     public Context getContext() {

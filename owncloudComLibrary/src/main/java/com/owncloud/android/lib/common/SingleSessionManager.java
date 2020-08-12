@@ -32,6 +32,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.owncloud.android.lib.common.accounts.AccountUtils;
+import com.owncloud.android.lib.common.authentication.OwnCloudCredentials;
 import com.owncloud.android.lib.common.http.HttpClient;
 import timber.log.Timber;
 
@@ -129,7 +130,6 @@ public class SingleSessionManager {
                 Timber.v("reusing client for session %s", sessionName);
             }
 
-            keepCredentialsUpdated(client);
             keepCookiesUpdated(context, account, client);
             keepUriUpdated(account, client);
         }
@@ -176,10 +176,6 @@ public class SingleSessionManager {
         Timber.d("All sessions saved");
     }
 
-    private void keepCredentialsUpdated(OwnCloudClient reusedClient) {
-        reusedClient.applyCredentials();
-    }
-
     private void keepCookiesUpdated(Context context, OwnCloudAccount account, OwnCloudClient reusedClient) {
         AccountManager am = AccountManager.get(context.getApplicationContext());
         if (am != null && account.getSavedAccount() != null) {
@@ -189,6 +185,15 @@ public class SingleSessionManager {
                 AccountUtils.restoreCookies(account.getSavedAccount(), reusedClient, context);
             }
         }
+    }
+
+    public void refreshCredentialsForAccount(String accountName, OwnCloudCredentials credentials) {
+        OwnCloudClient ownCloudClient = mClientsWithKnownUsername.get(accountName);
+        if (ownCloudClient == null) {
+            return;
+        }
+        ownCloudClient.setCredentials(credentials);
+        mClientsWithKnownUsername.replace(accountName, ownCloudClient);
     }
 
     // this method is just a patch; we need to distinguish accounts in the same host but

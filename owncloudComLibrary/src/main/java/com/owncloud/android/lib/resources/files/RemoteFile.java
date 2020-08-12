@@ -27,20 +27,11 @@ package com.owncloud.android.lib.resources.files;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import at.bitfire.dav4android.Property;
-import at.bitfire.dav4android.Response;
-import at.bitfire.dav4android.property.CreationDate;
-import at.bitfire.dav4android.property.GetContentLength;
-import at.bitfire.dav4android.property.GetContentType;
-import at.bitfire.dav4android.property.GetETag;
-import at.bitfire.dav4android.property.GetLastModified;
-import at.bitfire.dav4android.property.QuotaAvailableBytes;
-import at.bitfire.dav4android.property.QuotaUsedBytes;
-import at.bitfire.dav4android.property.owncloud.OCId;
-import at.bitfire.dav4android.property.owncloud.OCPermissions;
-import at.bitfire.dav4android.property.owncloud.OCPrivatelink;
-import at.bitfire.dav4android.property.owncloud.OCSize;
+import at.bitfire.dav4jvm.Property;
+import at.bitfire.dav4jvm.Response;
+import at.bitfire.dav4jvm.property.*;
 
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -92,13 +83,13 @@ public class RemoteFile implements Parcelable, Serializable {
     /**
      * Create new {@link RemoteFile} with given path.
      * <p>
-     * The path received must be URL-decoded. Path separator must be OCFile.PATH_SEPARATOR, and it must be the first character in 'path'.
+     * The path received must be URL-decoded. Path separator must be File.separator, and it must be the first character in 'path'.
      *
      * @param path The remote path of the file.
      */
     public RemoteFile(String path) {
         resetData();
-        if (path == null || path.length() <= 0 || !path.startsWith(FileUtils.PATH_SEPARATOR)) {
+        if (path == null || path.length() <= 0 || !path.startsWith(File.separator)) {
             throw new IllegalArgumentException("Trying to create a OCFile with a non valid remote path: " + path);
         }
         mRemotePath = path;

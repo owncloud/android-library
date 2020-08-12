@@ -21,29 +21,16 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.common.http.methods.webdav
 
-package com.owncloud.android.lib.common.http.methods.nonwebdav;
+import at.bitfire.dav4jvm.Property
+import at.bitfire.dav4jvm.PropertyUtils.getAllPropSet
+import at.bitfire.dav4jvm.PropertyUtils.getQuotaPropset
 
-import java.io.IOException;
-import java.net.URL;
+object DavUtils {
+    @JvmStatic val allPropset: Array<Property.Name>
+        get() = getAllPropSet()
 
-/**
- * OkHttp get calls wrapper
- *
- * @author David González Verdugo
- */
-public class GetMethod extends HttpMethod {
-
-    public GetMethod(URL url) {
-        super(url);
-    }
-
-    @Override
-    public int onExecute() throws IOException {
-        mRequest = mRequest.newBuilder()
-                .get()
-                .build();
-
-        return super.onExecute();
-    }
+    val quotaPropSet: Array<Property.Name>
+        get() = getQuotaPropset()
 }

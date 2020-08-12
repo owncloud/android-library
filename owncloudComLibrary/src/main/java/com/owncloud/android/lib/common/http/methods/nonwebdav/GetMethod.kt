@@ -21,31 +21,22 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.common.http.methods.nonwebdav
 
-package com.owncloud.android.lib.common.http.methods.webdav;
-
-import kotlin.Unit;
-
-import java.net.URL;
+import java.io.IOException
+import java.net.URL
 
 /**
- * MkCol calls wrapper
+ * OkHttp get calls wrapper
  *
- * @author Christian Schabesberger
  * @author David González Verdugo
  */
-public class MkColMethod extends DavMethod {
-    public MkColMethod(URL url) {
-        super(url);
-    }
-
-    @Override
-    public int onExecute() throws Exception {
-        mDavResource.mkCol(null, response -> {
-            mResponse = response;
-            return Unit.INSTANCE;
-        });
-
-        return super.getStatusCode();
+class GetMethod(url: URL) : HttpMethod(url) {
+    @Throws(IOException::class)
+    override fun onExecute(): Int {
+        request = request.newBuilder()
+            .get()
+            .build()
+        return super.onExecute()
     }
 }

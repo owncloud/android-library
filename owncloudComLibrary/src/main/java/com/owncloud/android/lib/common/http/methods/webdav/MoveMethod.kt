@@ -21,37 +21,32 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.common.http.methods.webdav
 
-package com.owncloud.android.lib.common.http.methods.webdav;
-
-import kotlin.Unit;
-
-import java.net.URL;
+import okhttp3.Response
+import java.net.URL
 
 /**
- * Copy calls wrapper
+ * Move calls wrapper
  *
  * @author Christian Schabesberger
  * @author David González Verdugo
  */
-public class CopyMethod extends DavMethod {
-
-    final String destinationUrl;
-    final boolean forceOverride;
-
-    public CopyMethod(URL url, String destinationUrl, boolean forceOverride) {
-        super(url);
-        this.destinationUrl = destinationUrl;
-        this.forceOverride = forceOverride;
+class MoveMethod(
+    url: URL,
+    private val destinationUrl: String,
+    private val forceOverride: Boolean
+) : DavMethod(url) {
+    @Throws(Exception::class)
+    public override fun onExecute(): Int {
+        davResource.move(
+            destinationUrl,
+            forceOverride,
+            super.getRequestHeadersAsHashMap()
+        ) { callBackResponse: Response ->
+            response = callBackResponse
+        }
+        return super.statusCode
     }
 
-    @Override
-    public int onExecute() throws Exception {
-        mDavResource.copy(destinationUrl, forceOverride, response -> {
-            mResponse = response;
-            return Unit.INSTANCE;
-        });
-
-        return super.getStatusCode();
-    }
 }

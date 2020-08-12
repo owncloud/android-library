@@ -21,43 +21,26 @@
  *   THE SOFTWARE.
  *
  */
-package com.owncloud.android.lib.common.authentication;
+package com.owncloud.android.lib.common.http.methods.nonwebdav
 
-import com.owncloud.android.lib.common.http.HttpConstants;
+import com.owncloud.android.lib.common.http.methods.HttpBaseMethod
+import okhttp3.Response
+import java.net.URL
 
-public class OwnCloudBearerCredentials implements OwnCloudCredentials {
+/**
+ * Wrapper to perform OkHttp calls
+ *
+ * @author David González Verdugo
+ */
+abstract class HttpMethod(
+    url: URL
+) : HttpBaseMethod(url) {
 
-    private String mUsername;
-    private String mAccessToken;
+    override lateinit var response: Response
 
-    public OwnCloudBearerCredentials(String username, String accessToken) {
-        mUsername = username != null ? username : "";
-        mAccessToken = accessToken != null ? accessToken : "";
-    }
-
-    @Override
-    public String getUsername() {
-        // not relevant for authentication, but relevant for informational purposes
-        return mUsername;
-    }
-
-    @Override
-    public String getAuthToken() {
-        return mAccessToken;
-    }
-
-    @Override
-    public String getHeaderAuth() {
-        return HttpConstants.BEARER_AUTHORIZATION_KEY + mAccessToken;
-    }
-
-    @Override
-    public boolean authTokenExpires() {
-        return true;
-    }
-
-    @Override
-    public boolean authTokenCanBeRefreshed() {
-        return true;
+    public override fun onExecute(): Int {
+        call = okHttpClient.newCall(request)
+        call?.let { response = it.execute() }
+        return super.statusCode
     }
 }

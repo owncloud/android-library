@@ -1,4 +1,5 @@
 /* ownCloud Android Library is available under MIT license
+ *
  *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,31 +20,11 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
+package com.owncloud.android.lib.resources.users
 
-package com.owncloud.android.lib.common.http.methods.nonwebdav;
-
-import java.io.IOException;
-import java.net.URL;
-
-/**
- * OkHttp delete calls wrapper
- *
- * @author David González Verdugo
- */
-public class DeleteMethod extends HttpMethod {
-
-    public DeleteMethod(URL url) {
-        super(url);
-    }
-
-    @Override
-    public int onExecute() throws IOException {
-        mRequest = mRequest.newBuilder()
-                .delete()
-                .build();
-
-        return super.onExecute();
-    }
-}
+data class RemoteAvatarData(
+    val avatarData: ByteArray = byteArrayOf(),
+    val mimeType: String = "",
+    val eTag: String = ""
+)
