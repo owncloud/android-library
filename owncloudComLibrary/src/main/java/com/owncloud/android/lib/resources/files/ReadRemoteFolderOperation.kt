@@ -58,7 +58,7 @@ class ReadRemoteFolderOperation(
             val propfindMethod = PropfindMethod(
                 URL(client.userFilesWebDavUri.toString() + WebdavUtils.encodePath(remotePath)),
                 DavConstants.DEPTH_1,
-                DavUtils.getAllPropset()
+                DavUtils.allPropset
             )
             client.setFollowRedirects(true)
 

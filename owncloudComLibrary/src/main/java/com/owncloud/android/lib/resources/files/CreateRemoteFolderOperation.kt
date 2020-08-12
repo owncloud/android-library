@@ -88,7 +88,7 @@ class CreateRemoteFolderOperation(
                 }
 
             Timber.d("Create directory $remotePath: ${result.logMessage}")
-            client.exhaustResponse(mkCol.responseBodyAsStream)
+            client.exhaustResponse(mkCol.getResponseBodyAsStream())
 
         } catch (e: Exception) {
             result = RemoteOperationResult(e)
