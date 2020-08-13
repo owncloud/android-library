@@ -23,11 +23,13 @@ import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.files.CheckPathExistenceRemoteOperation
 import com.owncloud.android.lib.resources.files.CreateRemoteFolderOperation
+import com.owncloud.android.lib.resources.files.DownloadRemoteFileOperation
 import com.owncloud.android.lib.resources.files.ReadRemoteFolderOperation
 import com.owncloud.android.lib.resources.files.RemoteFile
 import com.owncloud.android.lib.resources.files.services.FileService
 
 class OCFileService(override val client: OwnCloudClient) : FileService {
+
     override fun checkPathExistence(
         path: String,
         isUserLogged: Boolean
@@ -46,6 +48,15 @@ class OCFileService(override val client: OwnCloudClient) : FileService {
             remotePath = remotePath,
             createFullPath = createFullPath,
             isChunksFolder = isChunkFolder
+        ).execute(client)
+
+    override fun downloadFile(
+        remotePath: String,
+        localTempPath: String
+    ): RemoteOperationResult<Any> =
+        DownloadRemoteFileOperation(
+            remotePath = remotePath,
+            localFolderPath = localTempPath
         ).execute(client)
 
     override fun refreshFolder(remotePath: String): RemoteOperationResult<ArrayList<RemoteFile>> =
