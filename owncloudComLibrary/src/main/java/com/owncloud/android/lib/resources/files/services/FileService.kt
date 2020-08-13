@@ -39,6 +39,11 @@ interface FileService : Service {
         isChunkFolder: Boolean = false
     ): RemoteOperationResult<Unit>
 
+    fun downloadFile(
+        remotePath: String,
+        localTempPath: String
+    ): RemoteOperationResult<Any>
+
     fun refreshFolder(
         remotePath: String
     ): RemoteOperationResult<ArrayList<RemoteFile>>
