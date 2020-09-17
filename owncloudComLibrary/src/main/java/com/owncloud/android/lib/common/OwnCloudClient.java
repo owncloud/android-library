@@ -29,7 +29,6 @@ import android.accounts.AccountManager;
 import android.accounts.AccountsException;
 import android.net.Uri;
 
-import at.bitfire.dav4jvm.exception.HttpException;
 import com.owncloud.android.lib.common.accounts.AccountUtils;
 import com.owncloud.android.lib.common.authentication.OwnCloudCredentials;
 import com.owncloud.android.lib.common.authentication.OwnCloudCredentialsFactory;
@@ -37,7 +36,6 @@ import com.owncloud.android.lib.common.authentication.OwnCloudCredentialsFactory
 import com.owncloud.android.lib.common.http.HttpClient;
 import com.owncloud.android.lib.common.http.HttpConstants;
 import com.owncloud.android.lib.common.http.methods.HttpBaseMethod;
-import com.owncloud.android.lib.common.network.RedirectionPath;
 import com.owncloud.android.lib.common.utils.RandomUtils;
 import com.owncloud.android.lib.resources.status.OwnCloudVersion;
 import okhttp3.Cookie;
@@ -48,8 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.owncloud.android.lib.common.http.HttpConstants.OC_X_REQUEST_ID;
-
 public class OwnCloudClient extends HttpClient {
 
     public static final String WEBDAV_FILES_PATH_4_0 = "/remote.php/dav/files/";
@@ -57,7 +53,6 @@ public class OwnCloudClient extends HttpClient {
     private static final String WEBDAV_UPLOADS_PATH_4_0 = "/remote.php/dav/uploads/";
     public static final String STATUS_PATH = "/status.php";
 
-    private static final int MAX_REDIRECTIONS_COUNT = 3;
     private static final int MAX_REPEAT_COUNT_WITH_FRESH_CREDENTIALS = 1;
 
     private static byte[] sExhaustBuffer = new byte[1024];
@@ -111,7 +106,8 @@ public class OwnCloudClient extends HttpClient {
             status = method.execute();
 
             if (mFollowRedirects) {
-                status = followRedirection(method).getLastStatus();
+                RedirectionManager redirectionManager = new RedirectionManager(this);
+                status = redirectionManager.followRedirection(method).getLastStatus();
             }
 
             repeatWithFreshCredentials = checkUnauthorizedAccess(status, repeatCounter);
@@ -121,90 +117,6 @@ public class OwnCloudClient extends HttpClient {
         } while (repeatWithFreshCredentials);
 
         return status;
-    }
-
-    private int executeRedirectedHttpMethod(HttpBaseMethod method) throws Exception {
-        boolean repeatWithFreshCredentials;
-        int repeatCounter = 0;
-        int status;
-
-        do {
-            String requestId = RandomUtils.generateRandomUUID();
-
-            // Header to allow tracing requests in apache and ownCloud logs
-            Timber.d("Executing in request with id %s", requestId);
-            method.setRequestHeader(OC_X_REQUEST_ID, requestId);
-            method.setRequestHeader(HttpConstants.USER_AGENT_HEADER, SingleSessionManager.getUserAgent());
-            method.setRequestHeader(HttpConstants.PARAM_SINGLE_COOKIE_HEADER, "true");
-            method.setRequestHeader(HttpConstants.ACCEPT_ENCODING_HEADER, HttpConstants.ACCEPT_ENCODING_IDENTITY);
-            if (mCredentials.getHeaderAuth() != null) {
-                method.setRequestHeader(HttpConstants.AUTHORIZATION_HEADER, mCredentials.getHeaderAuth());
-            }
-            status = method.execute();
-
-            repeatWithFreshCredentials = checkUnauthorizedAccess(status, repeatCounter);
-            if (repeatWithFreshCredentials) {
-                repeatCounter++;
-            }
-        } while (repeatWithFreshCredentials);
-
-        return status;
-    }
-
-    public RedirectionPath followRedirection(HttpBaseMethod method) throws Exception {
-        int redirectionsCount = 0;
-        int status = method.getStatusCode();
-        RedirectionPath redirectionPath = new RedirectionPath(status, MAX_REDIRECTIONS_COUNT);
-
-        while (redirectionsCount < MAX_REDIRECTIONS_COUNT &&
-                (status == HttpConstants.HTTP_MOVED_PERMANENTLY ||
-                        status == HttpConstants.HTTP_MOVED_TEMPORARILY ||
-                        status == HttpConstants.HTTP_TEMPORARY_REDIRECT)
-        ) {
-
-            final String location = method.getResponseHeader(HttpConstants.LOCATION_HEADER) != null
-                    ? method.getResponseHeader(HttpConstants.LOCATION_HEADER)
-                    : method.getResponseHeader(HttpConstants.LOCATION_HEADER_LOWER);
-
-            if (location != null) {
-                Timber.d("#" + mInstanceNumber + "Location to redirect: " + location);
-
-                redirectionPath.addLocation(location);
-
-                // Release the connection to avoid reach the max number of connections per host
-                // due to it will be set a different url
-                exhaustResponse(method.getResponseBodyAsStream());
-
-                method.setUrl(HttpUrl.parse(location));
-                final String destination = method.getRequestHeader("Destination") != null
-                        ? method.getRequestHeader("Destination")
-                        : method.getRequestHeader("destination");
-
-                if (destination != null) {
-                    final int suffixIndex = location.lastIndexOf(getUserFilesWebDavUri().toString());
-                    final String redirectionBase = location.substring(0, suffixIndex);
-                    final String destinationPath = destination.substring(mBaseUri.toString().length());
-
-                    method.setRequestHeader("destination", redirectionBase + destinationPath);
-                }
-                try {
-                    status = executeRedirectedHttpMethod(method);
-                } catch (HttpException e) {
-                    if (e.getMessage().contains(Integer.toString(HttpConstants.HTTP_MOVED_TEMPORARILY))) {
-                        status = HttpConstants.HTTP_MOVED_TEMPORARILY;
-                    } else {
-                        throw e;
-                    }
-                }
-                redirectionPath.addStatus(status);
-                redirectionsCount++;
-
-            } else {
-                Timber.d(" #" + mInstanceNumber + "No location to redirect!");
-                status = HttpConstants.HTTP_NOT_FOUND;
-            }
-        }
-        return redirectionPath;
     }
 
     /**
@@ -322,7 +234,7 @@ public class OwnCloudClient extends HttpClient {
      * @param repeatCounter
      * @return
      */
-    private boolean checkUnauthorizedAccess(int status, int repeatCounter) {
+    public boolean checkUnauthorizedAccess(int status, int repeatCounter) {
         boolean credentialsWereRefreshed = false;
 
         if (shouldInvalidateAccountCredentials(status)) {
@@ -401,5 +313,9 @@ public class OwnCloudClient extends HttpClient {
 
     public void setFollowRedirects(boolean followRedirects) {
         this.mFollowRedirects = followRedirects;
+    }
+
+    public int getInstanceNumber() {
+        return mInstanceNumber;
     }
 }
