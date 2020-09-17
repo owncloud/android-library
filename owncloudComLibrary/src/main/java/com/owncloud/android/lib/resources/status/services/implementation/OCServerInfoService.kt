@@ -32,7 +32,7 @@ class OCServerInfoService : ServerInfoService {
     override fun checkPathExistence(path: String, isUserLogged: Boolean): RemoteOperationResult<Boolean> =
         CheckPathExistenceRemoteOperation(
             remotePath = path,
-            isUserLogged = true
+            isUserLoggedIn = true
         ).execute(createClientFromPath(path))
 
     override fun getRemoteStatus(path: String): RemoteOperationResult<OwnCloudVersion> =

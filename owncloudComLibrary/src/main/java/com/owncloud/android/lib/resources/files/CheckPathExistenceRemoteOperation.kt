@@ -44,12 +44,12 @@ import java.util.concurrent.TimeUnit
  * @author Abel García de Prada
  *
  * @param remotePath      Path to append to the URL owned by the client instance.
- * @param isUserLogged    When `true`, the username won't be added at the end of the PROPFIND url since is not
+ * @param isUserLoggedIn    When `true`, the username won't be added at the end of the PROPFIND url since is not
  *                        needed to check user credentials
  */
 class CheckPathExistenceRemoteOperation(
     val remotePath: String? = "",
-    val isUserLogged: Boolean
+    val isUserLoggedIn: Boolean
 ) : RemoteOperation<Boolean>() {
     /**
      * Gets the sequence of redirections followed during the execution of the operation.
@@ -59,17 +59,34 @@ class CheckPathExistenceRemoteOperation(
     var redirectionPath: RedirectionPath? = null
         private set
 
+    private fun getPropFindMethod(url: String): PropfindMethod {
+        return PropfindMethod(URL(url), 0, allPropset).apply {
+            setReadTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
+            setConnectionTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
+        }
+    }
+
+    private fun getRequestUrl() =
+        if (isUserLoggedIn) client.baseFilesWebDavUri.toString()
+        else client.userFilesWebDavUri.toString() + WebdavUtils.encodePath(remotePath)
+
+    /** PROPFIND method
+     * 404 NOT FOUND: path doesn't exist,
+     * 207 MULTI_STATUS: path exists.
+     */
+    private fun handleResult(requestUrl: String, status: Int, method: PropfindMethod): RemoteOperationResult<Boolean> {
+        Timber.d(
+            "Existence check for $requestUrl finished with HTTP status $status ${status.statusString()}"
+        )
+        return if (status.isSuccess()) RemoteOperationResult<Boolean>(ResultCode.OK).apply { data = true }
+        else RemoteOperationResult<Boolean>(method).apply { data = false }
+    }
+
     override fun run(client: OwnCloudClient): RemoteOperationResult<Boolean> {
         val previousFollowRedirects = client.followRedirects()
         return try {
-            val stringUrl =
-                if (isUserLogged) client.baseFilesWebDavUri.toString()
-                else client.userFilesWebDavUri.toString() + WebdavUtils.encodePath(remotePath)
-
-            val propFindMethod = PropfindMethod(URL(stringUrl), 0, allPropset).apply {
-                setReadTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
-                setConnectionTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
-            }
+            val requestUrl = getRequestUrl()
+            val propFindMethod = getPropFindMethod(requestUrl)
 
             client.setFollowRedirects(false)
             var status = client.executeHttpMethod(propFindMethod)
@@ -77,16 +94,7 @@ class CheckPathExistenceRemoteOperation(
                 redirectionPath = client.followRedirection(propFindMethod)
                 status = redirectionPath?.lastStatus!!
             }
-            /* PROPFIND method
-             * 404 NOT FOUND: path doesn't exist,
-             * 207 MULTI_STATUS: path exists.
-             */
-            Timber.d(
-                "Existence check for $stringUrl finished with HTTP status $status${if (!isSuccess(status)) "(FAIL)" else ""}"
-            )
-            if (isSuccess(status)) RemoteOperationResult<Boolean>(ResultCode.OK).apply { data = true }
-            else RemoteOperationResult<Boolean>(propFindMethod).apply { data = false }
-
+            handleResult(requestUrl, status, propFindMethod)
         } catch (e: Exception) {
             val result = RemoteOperationResult<Boolean>(e)
             Timber.e(
@@ -99,12 +107,9 @@ class CheckPathExistenceRemoteOperation(
         }
     }
 
-    /**
-     * @return 'True' if the operation was executed and at least one redirection was followed.
-     */
-    fun wasRedirected() = redirectionPath?.redirectionsCount ?: 0 > 0
+    private fun Int.statusString() = if (this.isSuccess()) "" else "(FAIL)"
 
-    private fun isSuccess(status: Int) = status == HttpConstants.HTTP_OK || status == HttpConstants.HTTP_MULTI_STATUS
+    private fun Int.isSuccess() = this == HttpConstants.HTTP_OK || this == HttpConstants.HTTP_MULTI_STATUS
 
     companion object {
         /**
