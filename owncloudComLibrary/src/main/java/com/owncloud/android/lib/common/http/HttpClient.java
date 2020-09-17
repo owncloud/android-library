@@ -64,69 +64,78 @@ public class HttpClient {
                 final X509TrustManager trustManager = new AdvancedX509TrustManager(
                         NetworkUtils.getKnownServersStore(sContext));
 
-                SSLContext sslContext;
-
-                try {
-                    sslContext = SSLContext.getInstance("TLSv1.3");
-                } catch (NoSuchAlgorithmException tlsv13Exception) {
-                    try {
-                        Timber.w("TLSv1.3 is not supported in this device; falling through TLSv1.2");
-                        sslContext = SSLContext.getInstance("TLSv1.2");
-                    } catch (NoSuchAlgorithmException tlsv12Exception) {
-                        try {
-                            Timber.w("TLSv1.2 is not supported in this device; falling through TLSv1.1");
-                            sslContext = SSLContext.getInstance("TLSv1.1");
-                        } catch (NoSuchAlgorithmException tlsv11Exception) {
-                            Timber.w("TLSv1.1 is not supported in this device; falling through TLSv1.0");
-                            sslContext = SSLContext.getInstance("TLSv1");
-                            // should be available in any device; see reference of supported protocols in
-                            // http://developer.android.com/reference/javax/net/ssl/SSLSocket.html
-                        }
-                    }
-                }
-
+                final SSLContext sslContext = getSSLContext();
                 sslContext.init(null, new TrustManager[]{trustManager}, null);
 
-                SSLSocketFactory sslSocketFactory;
-
-                sslSocketFactory = sslContext.getSocketFactory();
+                final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
                 // Automatic cookie handling, NOT PERSISTENT
-                CookieJar cookieJar = new CookieJar() {
-                    @Override
-                    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                        // Avoid duplicated cookies
-                        Set<Cookie> nonDuplicatedCookiesSet = new HashSet<>(cookies);
-                        List<Cookie> nonDuplicatedCookiesList = new ArrayList<>(nonDuplicatedCookiesSet);
-
-                        sCookieStore.put(url.host(), nonDuplicatedCookiesList);
-                    }
-
-                    @Override
-                    public List<Cookie> loadForRequest(HttpUrl url) {
-                        List<Cookie> cookies = sCookieStore.get(url.host());
-                        return cookies != null ? cookies : new ArrayList<>();
-                    }
-                };
-
-                OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                        .protocols(Arrays.asList(Protocol.HTTP_1_1))
-                        .readTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
-                        .writeTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
-                        .connectTimeout(HttpConstants.DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
-                        .followRedirects(false)
-                        .sslSocketFactory(sslSocketFactory, trustManager)
-                        .hostnameVerifier((asdf, usdf) -> true)
-                        .cookieJar(cookieJar);
-                // TODO: Not verifying the hostname against certificate. ask owncloud security human if this is ok.
-                //.hostnameVerifier(new BrowserCompatHostnameVerifier());
-                sOkHttpClient = clientBuilder.build();
+                final CookieJar cookieJar = getNewCookieJar();
+                sOkHttpClient = buildOkHttpClient(cookieJar, sslSocketFactory, trustManager);
 
             } catch (Exception e) {
                 Timber.e(e, "Could not setup SSL system.");
             }
         }
         return sOkHttpClient;
+    }
+
+    private static SSLContext getSSLContext() throws NoSuchAlgorithmException {
+        try {
+            return SSLContext.getInstance("TLSv1.3");
+        } catch (NoSuchAlgorithmException tlsv13Exception) {
+            try {
+                Timber.w("TLSv1.3 is not supported in this device; falling through TLSv1.2");
+                return SSLContext.getInstance("TLSv1.2");
+            } catch (NoSuchAlgorithmException tlsv12Exception) {
+                try {
+                    Timber.w("TLSv1.2 is not supported in this device; falling through TLSv1.1");
+                    return SSLContext.getInstance("TLSv1.1");
+                } catch (NoSuchAlgorithmException tlsv11Exception) {
+                    Timber.w("TLSv1.1 is not supported in this device; falling through TLSv1.0");
+                    return SSLContext.getInstance("TLSv1");
+                    // should be available in any device; see reference of supported protocols in
+                    // http://developer.android.com/reference/javax/net/ssl/SSLSocket.html
+                }
+            }
+        }
+    }
+
+    private static CookieJar getNewCookieJar() {
+        return new CookieJar() {
+            @Override
+            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                // Avoid duplicated cookies
+                Set<Cookie> nonDuplicatedCookiesSet = new HashSet<>(cookies);
+                List<Cookie> nonDuplicatedCookiesList = new ArrayList<>(nonDuplicatedCookiesSet);
+
+                sCookieStore.put(url.host(), nonDuplicatedCookiesList);
+                System.out.println("set cookiestore size " + url.toString() + " " + sCookieStore.size());
+            }
+
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl url) {
+                System.out.println("get cookiestore size " + url.toString() + " " + sCookieStore.size());
+                List<Cookie> cookies = sCookieStore.get(url.host());
+                return cookies != null ? cookies : new ArrayList<>();
+            }
+        };
+    }
+
+    private static OkHttpClient buildOkHttpClient(CookieJar cookieJar, SSLSocketFactory sslSocketFactory,
+                                                  X509TrustManager trustManager) {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .protocols(Arrays.asList(Protocol.HTTP_1_1))
+                .readTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
+                .writeTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
+                .connectTimeout(HttpConstants.DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                .followRedirects(false)
+                .sslSocketFactory(sslSocketFactory, trustManager)
+                .hostnameVerifier((placeholder1, placeholder2) -> true)
+                .cookieJar(cookieJar);
+        // TODO: Not verifying the hostname against certificate. ask owncloud security human if this is ok.
+        //.hostnameVerifier(new BrowserCompatHostnameVerifier());
+        return clientBuilder.build();
     }
 
     public Context getContext() {
