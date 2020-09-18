@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
  * Client used to perform network operations
  *
  * @author David González Verdugo
+ * @author Christian Schabesberger
  */
 public class HttpClient {
     private static OkHttpClient sOkHttpClient;
@@ -69,9 +70,7 @@ public class HttpClient {
 
                 final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-                // Automatic cookie handling, NOT PERSISTENT
-                final CookieJar cookieJar = getNewCookieJar();
-                sOkHttpClient = buildOkHttpClient(cookieJar, sslSocketFactory, trustManager);
+                sOkHttpClient = buildNewOkHttpClient(sslSocketFactory, trustManager);
 
             } catch (Exception e) {
                 Timber.e(e, "Could not setup SSL system.");
@@ -110,29 +109,27 @@ public class HttpClient {
                 List<Cookie> nonDuplicatedCookiesList = new ArrayList<>(nonDuplicatedCookiesSet);
 
                 sCookieStore.put(url.host(), nonDuplicatedCookiesList);
-                System.out.println("set cookiestore size " + url.toString() + " " + sCookieStore.size());
             }
 
             @Override
             public List<Cookie> loadForRequest(HttpUrl url) {
-                System.out.println("get cookiestore size " + url.toString() + " " + sCookieStore.size());
                 List<Cookie> cookies = sCookieStore.get(url.host());
                 return cookies != null ? cookies : new ArrayList<>();
             }
         };
     }
 
-    private static OkHttpClient buildOkHttpClient(CookieJar cookieJar, SSLSocketFactory sslSocketFactory,
-                                                  X509TrustManager trustManager) {
+    private static OkHttpClient buildNewOkHttpClient(SSLSocketFactory sslSocketFactory,
+                                                     X509TrustManager trustManager) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .protocols(Arrays.asList(Protocol.HTTP_1_1))
                 .readTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(HttpConstants.DEFAULT_DATA_TIMEOUT, TimeUnit.MILLISECONDS)
                 .connectTimeout(HttpConstants.DEFAULT_CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
-                .followRedirects(false)
+                .followRedirects(true)
                 .sslSocketFactory(sslSocketFactory, trustManager)
                 .hostnameVerifier((placeholder1, placeholder2) -> true)
-                .cookieJar(cookieJar);
+                .cookieJar(getNewCookieJar());
         // TODO: Not verifying the hostname against certificate. ask owncloud security human if this is ok.
         //.hostnameVerifier(new BrowserCompatHostnameVerifier());
         return clientBuilder.build();

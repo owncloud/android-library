@@ -134,6 +134,12 @@ abstract class HttpBaseMethod constructor(url: URL) {
             .build()
     }
 
+    fun addRedirectChainHandler(redirectChainHandler: RedirectChainHandler) {
+        okHttpClient = okHttpClient.newBuilder()
+            .addNetworkInterceptor(redirectChainHandler)
+            .build()
+    }
+
     /************
      *** Call ***
      ************/

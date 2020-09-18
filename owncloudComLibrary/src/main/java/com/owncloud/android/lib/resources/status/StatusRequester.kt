@@ -26,32 +26,15 @@ package com.owncloud.android.lib.resources.status
 
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.http.HttpConstants
+import com.owncloud.android.lib.common.http.methods.RedirectChainHandler
 import com.owncloud.android.lib.common.http.methods.nonwebdav.GetMethod
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.status.HttpScheme.HTTPS_SCHEME
-import com.owncloud.android.lib.resources.status.HttpScheme.HTTP_SCHEME
 import org.json.JSONObject
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
 internal class StatusRequester {
-
-    private fun checkIfConnectionIsRedirectedToNoneSecure(
-        isConnectionSecure: Boolean,
-        baseUrl: String,
-        redirectedUrl: String
-    ): Boolean {
-        return isConnectionSecure ||
-                (baseUrl.startsWith(HTTPS_SCHEME) && redirectedUrl.startsWith(HTTP_SCHEME))
-    }
-
-    fun updateLocationWithRedirectPath(oldLocation: String, redirectedLocation: String): String {
-        if (!redirectedLocation.startsWith("/"))
-            return redirectedLocation
-        val oldLocationURL = URL(oldLocation)
-        return URL(oldLocationURL.protocol, oldLocationURL.host, oldLocationURL.port, redirectedLocation).toString()
-    }
-
     private fun getGetMethod(url: String): GetMethod {
         return GetMethod(URL(url)).apply {
             setReadTimeout(TRY_CONNECTION_TIMEOUT, TimeUnit.SECONDS)
@@ -66,32 +49,20 @@ internal class StatusRequester {
         val redirectedToUnsecureLocation: Boolean
     )
 
-    fun requestAndFollowRedirects(baseLocation: String, client: OwnCloudClient): RequestResult {
+    fun requestStatus(baseLocation: String, client: OwnCloudClient): RequestResult {
         var currentLocation = baseLocation + OwnCloudClient.STATUS_PATH
-        var redirectedToUnsecureLocation = false
         var status: Int
 
-        while (true) {
-            val getMethod = getGetMethod(currentLocation)
+        val getMethod = getGetMethod(currentLocation)
+        val redirectChainHandler = RedirectChainHandler()
+        getMethod.addRedirectChainHandler(redirectChainHandler)
 
-            status = client.executeHttpMethod(getMethod)
-            val result =
-                if (status.isSuccess()) RemoteOperationResult<OwnCloudVersion>(RemoteOperationResult.ResultCode.OK)
-                else RemoteOperationResult(getMethod)
+        status = client.executeHttpMethod(getMethod)
+        val result =
+            if (status.isSuccess()) RemoteOperationResult<OwnCloudVersion>(RemoteOperationResult.ResultCode.OK)
+            else RemoteOperationResult(getMethod)
 
-            if (result.redirectedLocation.isNullOrEmpty() || result.isSuccess) {
-                return RequestResult(getMethod, status, result, redirectedToUnsecureLocation)
-            } else {
-                val nextLocation = updateLocationWithRedirectPath(currentLocation, result.redirectedLocation)
-                redirectedToUnsecureLocation =
-                    checkIfConnectionIsRedirectedToNoneSecure(
-                        redirectedToUnsecureLocation,
-                        currentLocation,
-                        nextLocation
-                    )
-                currentLocation = nextLocation
-            }
-        }
+        return RequestResult(getMethod, status, result, redirectChainHandler.hasBeenRedirectedUnsecureLocation)
     }
 
     private fun Int.isSuccess() = this == HttpConstants.HTTP_OK

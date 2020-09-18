@@ -90,10 +90,13 @@ class CheckPathExistenceRemoteOperation(
 
             client.setFollowRedirects(false)
             var status = client.executeHttpMethod(propFindMethod)
+            /*
             if (previousFollowRedirects) {
                 redirectionPath = client.followRedirection(propFindMethod)
                 status = redirectionPath?.lastStatus!!
             }
+
+             */
             handleResult(requestUrl, status, propFindMethod)
         } catch (e: Exception) {
             val result = RemoteOperationResult<Boolean>(e)
