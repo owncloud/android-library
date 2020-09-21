@@ -31,6 +31,7 @@ android {
         // This is pretty ugly but manifest placeholders don't seem to work very well when using different modules
         // See https://github.com/openid/AppAuth-Android/issues/325
         manifestPlaceholders = [appAuthRedirectScheme: '']
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
