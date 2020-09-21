@@ -17,6 +17,11 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
     testImplementation "junit:junit:4.13"
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:core:1.1.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
 }
 
 allOpen {
@@ -37,6 +42,7 @@ android {
         // This is pretty ugly but manifest placeholders don't seem to work very well when using different modules
         // See https://github.com/openid/AppAuth-Android/issues/325
         manifestPlaceholders = [appAuthRedirectScheme: '']
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     lintOptions {
