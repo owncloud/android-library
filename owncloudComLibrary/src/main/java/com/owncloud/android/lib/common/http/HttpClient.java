@@ -127,7 +127,7 @@ public class HttpClient {
         sContext = context;
     }
 
-    public List<Cookie> getCookiesFromUrl(HttpUrl httpUrl) {
+    public static List<Cookie> getCookiesFromUrl(HttpUrl httpUrl) {
         return sCookieStore.get(httpUrl.host());
     }
 
