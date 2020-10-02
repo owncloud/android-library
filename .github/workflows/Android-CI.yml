@@ -13,5 +13,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build with Gradle
+      - name: build and test
         run: ./gradlew build
+      - name: upload report
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: reports
+          path: owncloudComLibrary/build/reports
+      - name: upload sample app
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: sample app
+          path: sample_client/build/outputs/apk/debug/sample_client-debug.apk
