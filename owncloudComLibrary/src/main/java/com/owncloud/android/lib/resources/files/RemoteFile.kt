@@ -39,6 +39,7 @@ import at.bitfire.dav4jvm.property.OCSize
 import at.bitfire.dav4jvm.property.QuotaAvailableBytes
 import at.bitfire.dav4jvm.property.QuotaUsedBytes
 import com.owncloud.android.lib.common.OwnCloudClient
+import com.owncloud.android.lib.common.utils.isOneOf
 import kotlinx.android.parcel.Parcelize
 import okhttp3.HttpUrl
 import java.io.File
@@ -72,7 +73,9 @@ data class RemoteFile(
 
     // TODO: Quotas not used. Use or remove them.
     init {
-        require(!(remotePath.isEmpty() || !remotePath.startsWith(File.separator))) { "Trying to create a OCFile with a non valid remote path: $remotePath" }
+        require(
+            !(remotePath.isEmpty() || !remotePath.startsWith(File.separator))
+        ) { "Trying to create a OCFile with a non valid remote path: $remotePath" }
     }
 
     /**
@@ -81,7 +84,7 @@ data class RemoteFile(
      * @return true if it is a folder
      */
     val isFolder
-        get() = mimeType == MIME_DIR || mimeType == MIME_DIR_UNIX
+        get() = mimeType.isOneOf(MIME_DIR, MIME_DIR_UNIX)
 
     companion object {
 
@@ -146,7 +149,7 @@ data class RemoteFile(
         private fun getRemotePathFromUrl(url: HttpUrl, userId: String): String {
             val davFilesPath = OwnCloudClient.WEBDAV_FILES_PATH_4_0 + userId
             val absoluteDavPath = Uri.decode(url.encodedPath)
-            val pathToOc = absoluteDavPath.split(davFilesPath)[0]
+            val pathToOc = absoluteDavPath.split(davFilesPath).first()
             return absoluteDavPath.replace(pathToOc + davFilesPath, "")
         }
     }
