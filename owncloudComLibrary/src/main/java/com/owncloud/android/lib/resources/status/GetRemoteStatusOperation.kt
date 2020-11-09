@@ -66,6 +66,8 @@ class GetRemoteStatusOperation : RemoteOperation<OwnCloudVersion>() {
         return try {
             val requester = StatusRequester()
             val requestResult = requester.requestAndFollowRedirects(baseUrl, client)
+            Timber.d("==== GetRemoteStatusOperation result ====")
+            requestResult.printLog();
             requester.handleRequestResult(requestResult, baseUrl)
         } catch (e: JSONException) {
             RemoteOperationResult(ResultCode.INSTANCE_NOT_CONFIGURED)

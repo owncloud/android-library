@@ -32,6 +32,7 @@ import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.status.HttpScheme.HTTPS_SCHEME
 import com.owncloud.android.lib.resources.status.HttpScheme.HTTP_SCHEME
 import org.json.JSONObject
+import timber.log.Timber
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
@@ -69,7 +70,17 @@ internal class StatusRequester {
         val getMethod: GetMethod,
         val status: Int,
         val redirectedToUnsecureLocation: Boolean
-    )
+    ) {
+        fun printLog() {
+            Timber.d("""
+                ===== status request result =====
+                - GetMethod status code: ${getMethod.statusCode},
+                - GetMethod status msg: ${getMethod.statusMessage},
+                - status: ${status},
+                - redirectedToUnsecureLocation: ${redirectedToUnsecureLocation}
+            """.trimIndent())
+        }
+    }
 
     fun requestAndFollowRedirects(baseLocation: String, client: OwnCloudClient): RequestResult {
         var currentLocation = baseLocation + OwnCloudClient.STATUS_PATH
@@ -78,16 +89,24 @@ internal class StatusRequester {
 
         while (true) {
             val getMethod = getGetMethod(currentLocation)
+            Timber.d("StatusRequester, goto: ${currentLocation}")
 
             status = client.executeHttpMethod(getMethod)
+            Timber.d("StatusRequester, resturn status: ${status}")
             val result =
                 if (status.isSuccess()) RemoteOperationResult<OwnCloudVersion>(RemoteOperationResult.ResultCode.OK)
                 else RemoteOperationResult(getMethod)
 
+            Timber.d("StatusRequester, RemoteOperationResult: ${result}, isSuccess: ${result.isSuccess}")
+
             if (result.redirectedLocation.isNullOrEmpty() || result.isSuccess) {
+
+                Timber.d("StatusRequester, Redirection location was null or empty and result was success")
                 return RequestResult(getMethod, status, redirectedToUnsecureLocation)
             } else {
+                Timber.d("StatusRequester, go into next iteration")
                 val nextLocation = updateLocationWithRedirectPath(currentLocation, result.redirectedLocation)
+                Timber.d("StatusRequester, Next location: ${nextLocation}")
                 redirectedToUnsecureLocation =
                     isRedirectedToNonSecureConnection(
                         redirectedToUnsecureLocation,
