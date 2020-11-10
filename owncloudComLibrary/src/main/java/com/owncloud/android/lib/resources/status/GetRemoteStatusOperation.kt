@@ -70,8 +70,10 @@ class GetRemoteStatusOperation : RemoteOperation<OwnCloudVersion>() {
             requestResult.printLog();
             requester.handleRequestResult(requestResult, baseUrl)
         } catch (e: JSONException) {
+            Timber.d(e.stackTraceToString())
             RemoteOperationResult(ResultCode.INSTANCE_NOT_CONFIGURED)
         } catch (e: Exception) {
+            Timber.d(e.stackTraceToString())
             RemoteOperationResult(e)
         }
     }
