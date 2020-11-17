@@ -42,7 +42,7 @@ interface FileService : Service {
     fun downloadFile(
         remotePath: String,
         localTempPath: String
-    ): RemoteOperationResult<Any>
+    ): RemoteOperationResult<Unit>
 
     fun refreshFolder(
         remotePath: String
