@@ -7,7 +7,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
     api 'com.gitlab.ownclouders:dav4android:oc_support_2.1.5'
     api 'com.github.AppDevNext.Logcat:LogcatCore:2.1.1'
-    api 'com.github.theScrabi:AppAuth-Android:3bee2b381a2'
+    api 'com.github.theScrabi:AppAuth-Android:bcba971e7dc36a1d'
 
     // Moshi
     implementation ("com.squareup.moshi:moshi-kotlin:$moshiVersion") {
