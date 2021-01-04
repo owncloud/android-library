@@ -116,7 +116,7 @@ class CreateRemoteShareOperation(
             val uriBuilder = requestUri.buildUpon()
             uriBuilder.appendEncodedPath(ShareUtils.SHARING_API_PATH)
 
-            val postMethod = PostMethod(URL(uriBuilder.build().toString()), formBodyBuilder.build())
+            val postMethod = PostMethod(client, URL(uriBuilder.build().toString()), formBodyBuilder.build())
 
             postMethod.setRequestHeader(HttpConstants.CONTENT_TYPE_HEADER, HttpConstants.CONTENT_TYPE_URLENCODED_UTF8)
             postMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE)

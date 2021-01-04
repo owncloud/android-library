@@ -60,6 +60,7 @@ class RemoveRemoteShareOperation(private val remoteShareId: String) : RemoteOper
             uriBuilder.appendEncodedPath(remoteShareId)
 
             val deleteMethod = DeleteMethod(
+                client,
                 URL(uriBuilder.build().toString())
             )
 

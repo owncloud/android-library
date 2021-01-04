@@ -143,7 +143,7 @@ class UpdateRemoteShareOperation
             uriBuilder.appendEncodedPath(ShareUtils.SHARING_API_PATH)
             uriBuilder.appendEncodedPath(remoteId.toString())
 
-            val putMethod = PutMethod(URL(uriBuilder.build().toString()), formBodyBuilder.build())
+            val putMethod = PutMethod(client, URL(uriBuilder.build().toString()), formBodyBuilder.build())
 
             putMethod.setRequestHeader(HttpConstants.CONTENT_TYPE_HEADER, HttpConstants.CONTENT_TYPE_URLENCODED_UTF8)
             putMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE)
