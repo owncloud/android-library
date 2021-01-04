@@ -27,6 +27,7 @@ package com.owncloud.android.lib.common;
 
 import android.accounts.AccountManager;
 import android.accounts.AccountsException;
+import android.content.Context;
 import android.net.Uri;
 
 import at.bitfire.dav4jvm.exception.HttpException;

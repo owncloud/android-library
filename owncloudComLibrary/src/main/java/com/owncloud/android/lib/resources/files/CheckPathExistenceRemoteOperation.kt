@@ -66,7 +66,7 @@ class CheckPathExistenceRemoteOperation(
                 if (isUserLogged) client.baseFilesWebDavUri.toString()
                 else client.userFilesWebDavUri.toString() + WebdavUtils.encodePath(remotePath)
 
-            val propFindMethod = PropfindMethod(URL(stringUrl), 0, allPropset).apply {
+            val propFindMethod = PropfindMethod(client, URL(stringUrl), 0, allPropset).apply {
                 setReadTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
                 setConnectionTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
             }
