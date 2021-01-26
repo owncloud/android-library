@@ -24,7 +24,6 @@
 
 package com.owncloud.android.lib.resources.shares
 
-import com.owncloud.android.lib.resources.files.FileUtils
 import java.io.File
 
 /**
@@ -35,7 +34,7 @@ import java.io.File
  * @author David González Verdugo
  */
 data class RemoteShare(
-    var id: Long = 0,
+    var id: String = "0",
     var shareWith: String = "",
     var path: String = "",
     var token: String = "",
@@ -43,15 +42,11 @@ data class RemoteShare(
     var sharedWithAdditionalInfo: String = "",
     var name: String = "",
     var shareLink: String = "",
-    var fileSource: String = "0",
-    var itemSource: String = "0",
     var shareType: ShareType? = ShareType.UNKNOWN,
     var permissions: Int = DEFAULT_PERMISSION,
     var sharedDate: Long = INIT_SHARED_DATE,
     var expirationDate: Long = INIT_EXPIRATION_DATE_IN_MILLIS,
-    var isFolder: Boolean = path.endsWith(File.separator),
-    var userId: Long = 0,
-    val isValid: Boolean = id > -1
+    var isFolder: Boolean = path.endsWith(File.separator)
 ) {
 
     companion object {
@@ -106,17 +101,6 @@ enum class ShareType constructor(val value: Int) {
     FEDERATED(6);
 
     companion object {
-        fun fromValue(value: Int): ShareType? {
-            return when (value) {
-                -1 -> UNKNOWN
-                0 -> USER
-                1 -> GROUP
-                3 -> PUBLIC_LINK
-                4 -> EMAIL
-                5 -> CONTACT
-                6 -> FEDERATED
-                else -> null
-            }
-        }
+        fun fromValue(value: Int) = values().firstOrNull { it.value == value }
     }
 }

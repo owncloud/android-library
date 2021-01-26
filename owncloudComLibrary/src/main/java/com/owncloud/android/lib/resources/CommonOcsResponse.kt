@@ -1,4 +1,5 @@
 /* ownCloud Android Library is available under MIT license
+ *
  *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,38 +20,33 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
+package com.owncloud.android.lib.resources
 
-package com.owncloud.android.lib.resources.files;
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-import timber.log.Timber;
+// Response retrieved by OCS Rest API, used to obtain capabilities, shares and user info among others.
+// More info: https://doc.owncloud.com/server/developer_manual/core/apis/ocs-capabilities.html
+@JsonClass(generateAdapter = true)
+data class CommonOcsResponse<T>(
+    val ocs: OCSResponse<T>
+)
 
-import java.io.File;
+@JsonClass(generateAdapter = true)
+data class OCSResponse<T>(
+    val meta: MetaData,
+    val data: T
+)
 
-public class FileUtils {
-    public static final String FINAL_CHUNKS_FILE = ".file";
-    public static final String MIME_DIR = "DIR";
-    public static final String MIME_DIR_UNIX = "httpd/unix-directory";
-
-    static String getParentPath(String remotePath) {
-        String parentPath = new File(remotePath).getParent();
-        parentPath = parentPath.endsWith(File.separator) ? parentPath : parentPath + File.separator;
-        return parentPath;
-    }
-
-    /**
-     * Validate the fileName to detect if contains any forbidden character: / , \ , < , > ,
-     * : , " , | , ? , *
-     *
-     */
-    public static boolean isValidName(String fileName) {
-        boolean result = true;
-
-        Timber.d("fileName =======%s", fileName);
-        if (fileName.contains(File.separator)) {
-            result = false;
-        }
-        return result;
-    }
-}
+@JsonClass(generateAdapter = true)
+data class MetaData(
+    val status: String,
+    @Json(name = "statuscode")
+    val statusCode: Int,
+    val message: String?,
+    @Json(name = "itemsperpage")
+    val itemsPerPage: String?,
+    @Json(name = "totalitems")
+    val totalItems: String?
+)
