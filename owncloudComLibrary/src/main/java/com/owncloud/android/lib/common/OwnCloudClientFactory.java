@@ -42,7 +42,6 @@ public class OwnCloudClientFactory {
         OwnCloudClient client = new OwnCloudClient(uri);
 
         client.setFollowRedirects(followRedirects);
-        HttpClient.setContext(context);
         retrieveCookiesFromMiddleware(client);
         return client;
     }
