@@ -73,7 +73,8 @@ public class OwnCloudClient extends HttpClient {
 
     private boolean mFollowRedirects;
 
-    public OwnCloudClient(Uri baseUri) {
+    public OwnCloudClient(Uri baseUri, Context context) {
+        super(context);
         if (baseUri == null) {
             throw new IllegalArgumentException("Parameter 'baseUri' cannot be NULL");
         }
