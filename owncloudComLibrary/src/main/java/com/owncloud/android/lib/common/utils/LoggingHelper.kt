@@ -24,6 +24,7 @@
 
 package com.owncloud.android.lib.common.utils
 
+import info.hannes.timber.DebugFormatTree
 import info.hannes.timber.FileLoggingTree
 import info.hannes.timber.fileLoggingTree
 import timber.log.Timber
@@ -38,6 +39,7 @@ object LoggingHelper {
         if (!directory.exists())
             directory.mkdirs()
         Timber.plant(FileLoggingTree(directory, filename = storagePath))
+        Timber.plant(DebugFormatTree())
     }
 
     fun stopLogging() {
