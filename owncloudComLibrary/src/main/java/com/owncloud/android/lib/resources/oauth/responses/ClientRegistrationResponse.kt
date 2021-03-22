@@ -1,5 +1,8 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2020 ownCloud GmbH.
+ *
+ *   @author Abel García de Prada
+ *
+ *   Copyright (C) 2021 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -21,14 +24,19 @@
  *   THE SOFTWARE.
  *
  */
-package com.owncloud.android.lib.resources.status.services
+package com.owncloud.android.lib.resources.oauth.responses
 
-import com.owncloud.android.lib.common.OwnCloudClient
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.status.RemoteServerInfo
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-interface ServerInfoService {
-    fun checkPathExistence(path: String, isUserLogged: Boolean, client: OwnCloudClient): RemoteOperationResult<Boolean>
-
-    fun getRemoteStatus(path: String, client: OwnCloudClient): RemoteOperationResult<RemoteServerInfo>
-}
+@JsonClass(generateAdapter = true)
+data class ClientRegistrationResponse(
+    @Json(name = "client_id")
+    val clientId: String,
+    @Json(name = "client_secret")
+    val clientSecret: String?,
+    @Json(name = "client_id_issued_at")
+    val clientIdIssuedAt: Int?,
+    @Json(name = "client_secret_expires_at")
+    val clientSecretExpiration: Int,
+)

@@ -9,12 +9,13 @@ dependencies {
     api 'com.github.AppDevNext.Logcat:LogcatCore:2.2.2'
 
     // Moshi
-    implementation ("com.squareup.moshi:moshi-kotlin:$moshiVersion") {
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion") {
         exclude module: "kotlin-reflect"
     }
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
 }
 
 android {
@@ -24,8 +25,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
 
-        versionCode = 10000900
-        versionName = "1.0.9"
+        versionCode = 10001000
+        versionName = "1.0.10"
     }
 
     lintOptions {
@@ -36,5 +37,11 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 }
