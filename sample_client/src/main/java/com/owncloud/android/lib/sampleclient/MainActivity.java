@@ -94,6 +94,10 @@ public class MainActivity extends Activity implements OnRemoteOperationListener,
 
 
 
+
+        
+
+
         mFilesAdapter = new FilesArrayAdapter(this, R.layout.file_in_list);
         ((ListView) findViewById(R.id.list_view)).setAdapter(mFilesAdapter);
 
