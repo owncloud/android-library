@@ -40,7 +40,7 @@ import at.bitfire.dav4jvm.property.QuotaAvailableBytes
 import at.bitfire.dav4jvm.property.QuotaUsedBytes
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.utils.isOneOf
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl
 import java.io.File
 import java.math.BigDecimal
