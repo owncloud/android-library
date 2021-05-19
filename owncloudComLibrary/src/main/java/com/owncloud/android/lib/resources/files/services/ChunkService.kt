@@ -31,4 +31,11 @@ interface ChunkService : Service {
     fun removeFile(
         remotePath: String
     ): RemoteOperationResult<Unit>
+
+    fun moveFile(
+        sourceRemotePath: String,
+        targetRemotePath: String,
+        fileLastModificationTimestamp: String,
+        fileLength: Long
+    ): RemoteOperationResult<Unit>
 }

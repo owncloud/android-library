@@ -44,6 +44,11 @@ interface FileService : Service {
         localTempPath: String
     ): RemoteOperationResult<Unit>
 
+    fun moveFile(
+        sourceRemotePath: String,
+        targetRemotePath: String,
+    ): RemoteOperationResult<Unit>
+
     fun refreshFolder(
         remotePath: String
     ): RemoteOperationResult<ArrayList<RemoteFile>>
