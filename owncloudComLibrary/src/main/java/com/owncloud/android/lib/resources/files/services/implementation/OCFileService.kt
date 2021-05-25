@@ -27,6 +27,7 @@ package com.owncloud.android.lib.resources.files.services.implementation
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.files.CheckPathExistenceRemoteOperation
+import com.owncloud.android.lib.resources.files.CopyRemoteFileOperation
 import com.owncloud.android.lib.resources.files.CreateRemoteFolderOperation
 import com.owncloud.android.lib.resources.files.DownloadRemoteFileOperation
 import com.owncloud.android.lib.resources.files.MoveRemoteFileOperation
@@ -45,6 +46,15 @@ class OCFileService(override val client: OwnCloudClient) : FileService {
         CheckPathExistenceRemoteOperation(
             remotePath = path,
             isUserLogged = isUserLogged
+        ).execute(client)
+
+    override fun copyFile(
+        sourceRemotePath: String,
+        targetRemotePath: String
+    ): RemoteOperationResult<String> =
+        CopyRemoteFileOperation(
+            srcRemotePath = sourceRemotePath,
+            targetRemotePath = targetRemotePath
         ).execute(client)
 
     override fun createFolder(
