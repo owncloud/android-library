@@ -33,6 +33,11 @@ interface FileService : Service {
         isUserLogged: Boolean
     ): RemoteOperationResult<Boolean>
 
+    fun copyFile(
+        sourceRemotePath: String,
+        targetRemotePath: String,
+    ): RemoteOperationResult<String>
+
     fun createFolder(
         remotePath: String,
         createFullPath: Boolean,
