@@ -37,17 +37,13 @@ public class OwnCloudClientFactory {
      * client connections.
      *
      * @param uri     URL to the ownCloud server; BASE ENTRY POINT, not WebDavPATH
-     * @param context Android context where the OwnCloudClient is being created.
      * @return A OwnCloudClient object ready to be used
      */
-    public static OwnCloudClient createOwnCloudClient(Uri uri, Context context, boolean followRedirects) {
-        OwnCloudClient client = new OwnCloudClient(uri);
+    public static OwnCloudClient createOwnCloudClient(Uri uri, boolean followRedirects, Context context) {
+        OwnCloudClient client = new OwnCloudClient(uri, context);
 
         client.setFollowRedirects(followRedirects);
-
-        HttpClient.setContext(context);
         retrieveCookiesFromMiddleware(client);
-
         return client;
     }
 

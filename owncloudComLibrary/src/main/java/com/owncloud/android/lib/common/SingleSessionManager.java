@@ -106,8 +106,8 @@ public class SingleSessionManager {
             // no client to reuse - create a new one
             client = OwnCloudClientFactory.createOwnCloudClient(
                     account.getBaseUri(),
-                    context.getApplicationContext(),
-                    true);    // TODO remove dependency on OwnCloudClientFactory
+                    true,
+                    context);    // TODO remove dependency on OwnCloudClientFactory
 
             //the next two lines are a hack because okHttpclient is used as a singleton instead of being an
             //injected instance that can be deleted when required
@@ -115,7 +115,6 @@ public class SingleSessionManager {
             client.clearCredentials();
 
             client.setAccount(account);
-            HttpClient.setContext(context);
 
             account.loadCredentials(context);
             client.setCredentials(account.getCredentials());

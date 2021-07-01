@@ -27,6 +27,7 @@ package com.owncloud.android.lib.common;
 
 import android.accounts.AccountManager;
 import android.accounts.AccountsException;
+import android.content.Context;
 import android.net.Uri;
 
 import at.bitfire.dav4jvm.exception.HttpException;
@@ -72,7 +73,8 @@ public class OwnCloudClient extends HttpClient {
 
     private boolean mFollowRedirects;
 
-    public OwnCloudClient(Uri baseUri) {
+    public OwnCloudClient(Uri baseUri, Context context) {
+        super(context);
         if (baseUri == null) {
             throw new IllegalArgumentException("Parameter 'baseUri' cannot be NULL");
         }

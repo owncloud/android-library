@@ -57,6 +57,7 @@ class GetRemoteStatusOperation : RemoteOperation<RemoteServerInfo>() {
         return result
     }
 
+
     private fun tryToConnect(client: OwnCloudClient): RemoteOperationResult<RemoteServerInfo> {
         val baseUrl = client.baseUri.toString()
         client.setFollowRedirects(false)
