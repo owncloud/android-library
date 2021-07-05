@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2020 ownCloud GmbH.
+ *   Copyright (C) 2021 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -21,51 +21,30 @@
  *   THE SOFTWARE.
  *
  */
-package com.owncloud.android.lib.resources.files.services
 
+package com.owncloud.android.lib.resources.files.services.implementation
+
+import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.Service
-import com.owncloud.android.lib.resources.files.RemoteFile
+import com.owncloud.android.lib.resources.files.chunks.MoveRemoteChunksFileOperation
+import com.owncloud.android.lib.resources.files.chunks.RemoveRemoteChunksFolderOperation
+import com.owncloud.android.lib.resources.files.services.ChunkService
 
-interface FileService : Service {
-    fun checkPathExistence(
-        path: String,
-        isUserLogged: Boolean
-    ): RemoteOperationResult<Boolean>
+class OCChunkService(override val client: OwnCloudClient) : ChunkService {
 
-    fun copyFile(
+    override fun removeFile(remotePath: String): RemoteOperationResult<Unit> =
+        RemoveRemoteChunksFolderOperation(remotePath = remotePath).execute(client)
+
+    override fun moveFile(
         sourceRemotePath: String,
         targetRemotePath: String,
-    ): RemoteOperationResult<String>
-
-    fun createFolder(
-        remotePath: String,
-        createFullPath: Boolean,
-        isChunkFolder: Boolean = false
-    ): RemoteOperationResult<Unit>
-
-    fun downloadFile(
-        remotePath: String,
-        localTempPath: String
-    ): RemoteOperationResult<Unit>
-
-    fun moveFile(
-        sourceRemotePath: String,
-        targetRemotePath: String,
-    ): RemoteOperationResult<Unit>
-
-    fun refreshFolder(
-        remotePath: String
-    ): RemoteOperationResult<ArrayList<RemoteFile>>
-
-    fun removeFile(
-        remotePath: String
-    ): RemoteOperationResult<Unit>
-
-    fun renameFile(
-        oldName: String,
-        oldRemotePath: String,
-        newName: String,
-        isFolder: Boolean,
-    ): RemoteOperationResult<Unit>
+        fileLastModificationTimestamp: String,
+        fileLength: Long
+    ): RemoteOperationResult<Unit> =
+        MoveRemoteChunksFileOperation(
+            sourceRemotePath = sourceRemotePath,
+            targetRemotePath = targetRemotePath,
+            fileLastModificationTimestamp = fileLastModificationTimestamp,
+            fileLength = fileLength,
+        ).execute(client)
 }

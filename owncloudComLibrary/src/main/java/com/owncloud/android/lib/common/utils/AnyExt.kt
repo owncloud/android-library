@@ -22,29 +22,8 @@
  *
  */
 
-package com.owncloud.android.lib.resources.files.chunks;
+package com.owncloud.android.lib.common.utils
 
-import com.owncloud.android.lib.resources.files.MoveRemoteFileOperation;
-
-/**
- * Remote operation to move the file built from chunks after uploading it
- *
- * @author David González Verdugo
- */
-public class MoveRemoteChunksFileOperation extends MoveRemoteFileOperation {
-
-    /**
-     * Constructor.
-     *
-     * @param srcRemotePath    Remote path of the file/folder to move.
-     * @param targetRemotePath Remove path desired for the file/folder after moving it.
-     * @param overwrite
-     */
-    public MoveRemoteChunksFileOperation(String srcRemotePath, String targetRemotePath, boolean overwrite,
-                                         String fileLastModifTimestamp, long fileLength) {
-        super(srcRemotePath, targetRemotePath, overwrite);
-        moveChunkedFile = true;
-        mFileLastModifTimestamp = fileLastModifTimestamp;
-        mFileLength = fileLength;
-    }
+fun Any.isOneOf(vararg values: Any): Boolean {
+    return this in values
 }
