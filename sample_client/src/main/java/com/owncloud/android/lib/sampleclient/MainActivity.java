@@ -25,6 +25,7 @@
 package com.owncloud.android.lib.sampleclient;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -75,6 +76,9 @@ public class MainActivity extends Activity implements OnRemoteOperationListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        getActionBar().hide();
+
 
         Timber.plant(new DebugTree());
         mHandler = new Handler();
