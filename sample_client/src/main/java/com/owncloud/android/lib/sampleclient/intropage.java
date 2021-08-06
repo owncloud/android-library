@@ -194,7 +194,7 @@ public class intropage extends AppCompatActivity {
                 next_finish.setText("Next");
                 back.setText("");
             }
-            else if(i==mDots.length-1){
+            else if (i == mDots.length - 1) {
                 next_finish.setEnabled(true);
                 back.setEnabled(true);
                 back.setVisibility(View.VISIBLE);
