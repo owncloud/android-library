@@ -79,7 +79,6 @@ public class MainActivity extends Activity implements OnRemoteOperationListener,
 
         getActionBar().hide();
 
-
         Timber.plant(new DebugTree());
         mHandler = new Handler();
 

@@ -43,4 +43,7 @@
     <string name="sample_file_name">oc_sample.png</string>
     <string name="sample_file_mimetype">image/png</string>
     <string name="error_deleting_local_file">Downloaded file could not be deleted</string>
+
+    <string name="dummy">A dummy String</string>
+
 </resources>

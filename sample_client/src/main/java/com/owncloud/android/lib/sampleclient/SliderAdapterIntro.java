@@ -16,11 +16,12 @@ public class SliderAdapterIntro extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
 
-    public SliderAdapterIntro(Context context){
-        this.context=context;
+    public SliderAdapterIntro(Context context) {
+        this.context = context;
     }
+
     //array of images
-    public String[] slide_images={
+    public String[] slide_images = {
 
             "welcome.json",
 
@@ -32,25 +33,24 @@ public class SliderAdapterIntro extends PagerAdapter {
 
             "security.json"
 
-
     };
 
     //array of images
-    public String[] slide_title={
+    public String[] slide_title = {
             "Welcome To Instagram App"
-            ,"Connecting People"
-            ,"Spread Love"
-            ,"Update Posts,Your Timeline"
-            ,"Secure Chatting"
+            , "Connecting People"
+            , "Spread Love"
+            , "Update Posts,Your Timeline"
+            , "Secure Chatting"
     };
 
     //array of images
-    public String[] slide_description={
+    public String[] slide_description = {
             "Using ownCloud Android library it will be the easiest way to communicate with ownCloud servers."
-            ,"Add this library in your project and integrate your application with ownCloud seamlessly"
-            ,"Always Up-To-Date Guide to Social Media with Image and have fun..."
-            ,"Enjoy every movements"
-            ,"Secured app"
+            , "Add this library in your project and integrate your application with ownCloud seamlessly"
+            , "Always Up-To-Date Guide to Social Media with Image and have fun..."
+            , "Enjoy every movements"
+            , "Secured app"
     };
 
     @Override
@@ -58,30 +58,27 @@ public class SliderAdapterIntro extends PagerAdapter {
         return slide_title.length;
     }
 
-
-
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-        return view==(RelativeLayout)object;
+        return view == (RelativeLayout) object;
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        layoutInflater=(LayoutInflater)context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-        View view =layoutInflater.inflate(R.layout.slide_layout,container,false);
+        layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.slide_layout, container, false);
 
         //ImageView slideImageView=(ImageView)view.findViewById(R.id.intro_img);
-        TextView slideTitle=(TextView) view.findViewById(R.id.intro_title);
-        LottieAnimationView slideImageView=(LottieAnimationView)view.findViewById(R.id.intro_img);
+        TextView slideTitle = (TextView) view.findViewById(R.id.intro_title);
+        LottieAnimationView slideImageView = (LottieAnimationView) view.findViewById(R.id.intro_img);
         //slideImageView.setSpeed(200f);
 
-
-        TextView slideDescription=(TextView) view.findViewById(R.id.intro_description);
+        TextView slideDescription = (TextView) view.findViewById(R.id.intro_description);
 
         slideImageView.setAnimation(slide_images[position]);
         slideTitle.setText(slide_title[position]);
-       slideDescription.setText(slide_description[position]);
+        slideDescription.setText(slide_description[position]);
 
         container.addView(view);
         return view;
@@ -90,6 +87,6 @@ public class SliderAdapterIntro extends PagerAdapter {
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        container.removeView((RelativeLayout)object);
+        container.removeView((RelativeLayout) object);
     }
 }

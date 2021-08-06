@@ -70,9 +70,7 @@
                 android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="Description sasdsadsasdsadsad DescriptionDescriptionDescription
-Description Descr iptionDescr iptionDe scriptionDe scriptionDescription
-  Descripti onDescriptionDescriptionDescription Description Description Description"
+                android:text="@string/dummy"
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimary"
                 android:textSize="15dp"
