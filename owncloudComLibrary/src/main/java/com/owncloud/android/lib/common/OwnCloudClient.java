@@ -109,7 +109,7 @@ public class OwnCloudClient extends HttpClient {
             if (mCredentials.getHeaderAuth() != null && method.getRequestHeader(AUTHORIZATION_HEADER) == null) {
                 method.setRequestHeader(AUTHORIZATION_HEADER, mCredentials.getHeaderAuth());
             }
-            status = method.execute();
+            status = method.execute(this);
 
             if (mFollowRedirects) {
                 status = followRedirection(method).getLastStatus();
@@ -140,7 +140,7 @@ public class OwnCloudClient extends HttpClient {
             if (mCredentials.getHeaderAuth() != null) {
                 method.setRequestHeader(AUTHORIZATION_HEADER, mCredentials.getHeaderAuth());
             }
-            status = method.execute();
+            status = method.execute(this);
 
             repeatWithFreshCredentials = checkUnauthorizedAccess(status, repeatCounter);
             if (repeatWithFreshCredentials) {
