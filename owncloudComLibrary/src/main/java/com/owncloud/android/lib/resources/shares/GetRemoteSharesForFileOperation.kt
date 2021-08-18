@@ -73,7 +73,7 @@ class GetRemoteSharesForFileOperation(
             uriBuilder.appendQueryParameter(PARAM_RESHARES, reshares.toString())
             uriBuilder.appendQueryParameter(PARAM_SUBFILES, subfiles.toString())
 
-            val getMethod = GetMethod(client, URL(uriBuilder.build().toString()))
+            val getMethod = GetMethod(URL(uriBuilder.build().toString()))
 
             getMethod.addRequestHeader(OCS_API_HEADER, OCS_API_HEADER_VALUE)
 
