@@ -47,6 +47,8 @@ public class OwnCloudAccount {
 
     private Uri mBaseUri;
 
+    
+
     private OwnCloudCredentials mCredentials;
 
     private String mDisplayName;
