@@ -29,6 +29,7 @@ package com.owncloud.android.lib.resources.shares.services.implementation
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
 import com.owncloud.android.lib.resources.shares.CreateRemoteShareOperation
+import com.owncloud.android.lib.resources.shares.GetPrivateLinkDiscoveredOperation
 import com.owncloud.android.lib.resources.shares.GetRemoteSharesForFileOperation
 import com.owncloud.android.lib.resources.shares.RemoveRemoteShareOperation
 import com.owncloud.android.lib.resources.shares.ShareResponse
@@ -94,4 +95,10 @@ class OCShareService(override val client: OwnCloudClient) :
         RemoveRemoteShareOperation(
             remoteId
         ).execute(client)
+
+    override fun checkPrivateLink(url: String): RemoteOperationResult<String> {
+        return GetPrivateLinkDiscoveredOperation(
+            url
+        ).execute(client)
+    }
 }

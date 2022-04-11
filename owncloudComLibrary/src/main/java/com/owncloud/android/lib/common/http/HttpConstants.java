@@ -50,6 +50,7 @@ public class HttpConstants {
     public static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
     public static final String ACCEPT_ENCODING_IDENTITY = "identity";
     public static final String OC_FILE_REMOTE_ID = "OC-FileId";
+    public static final String LOCATION_WEB_DAV_HEADER = "webdav-location";
 
     // OAuth
     public static final String OAUTH_HEADER_AUTHORIZATION_CODE = "code";

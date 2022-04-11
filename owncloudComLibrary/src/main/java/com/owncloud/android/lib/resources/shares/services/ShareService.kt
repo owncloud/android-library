@@ -59,4 +59,8 @@ interface ShareService : Service {
     ): RemoteOperationResult<ShareResponse>
 
     fun deleteShare(remoteId: String): RemoteOperationResult<ShareResponse>
+
+    fun checkPrivateLink(
+        url: String
+    ): RemoteOperationResult<String>
 }
