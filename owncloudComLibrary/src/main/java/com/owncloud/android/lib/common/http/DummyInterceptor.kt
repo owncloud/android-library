@@ -22,37 +22,10 @@
  *
  */
 
-package com.owncloud.android.lib.common;
+package com.owncloud.android.lib.common.http
 
-import android.content.Context;
-import android.net.Uri;
+import okhttp3.Interceptor
 
-import com.owncloud.android.lib.common.http.HttpClient;
-import com.owncloud.android.lib.resources.status.GetRemoteStatusOperation;
-
-public class OwnCloudClientFactory {
-
-    /**
-     * Creates a OwnCloudClient to access a URL and sets the desired parameters for ownCloud
-     * client connections.
-     *
-     * @param uri     URL to the ownCloud server; BASE ENTRY POINT, not WebDavPATH
-     * @param context Android context where the OwnCloudClient is being created.
-     * @return A OwnCloudClient object ready to be used
-     */
-    public static OwnCloudClient createOwnCloudClient(Uri uri, Context context, boolean followRedirects) {
-        OwnCloudClient client = new OwnCloudClient(uri);
-
-        client.setFollowRedirects(followRedirects);
-
-        HttpClient.setContext(context);
-        retrieveCookiesFromMiddleware(client);
-
-        return client;
-    }
-
-    private static void retrieveCookiesFromMiddleware(OwnCloudClient client) {
-        final GetRemoteStatusOperation statusOperation = new GetRemoteStatusOperation();
-        statusOperation.run(client);
-    }
+class DummyInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain) = chain.proceed(chain.request())
 }

@@ -12,31 +12,25 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion") {
         exclude module: "kotlin-reflect"
     }
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.7.3'
+    testImplementation 'org.robolectric:robolectric:4.8.1'
+    debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.6.0'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
-
-        versionCode = 10001400
-        versionName = "1.0.14"
+        targetSdkVersion 31
     }
 
-    lintOptions {
+    lint {
         abortOnError false
         ignoreWarnings true
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     testOptions {

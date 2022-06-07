@@ -1,3 +1,27 @@
+/* ownCloud Android Library is available under MIT license
+ *   Copyright (C) 2022 ownCloud GmbH.
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a copy
+ *   of this software and associated documentation files (the "Software"), to deal
+ *   in the Software without restriction, including without limitation the rights
+ *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *   copies of the Software, and to permit persons to whom the Software is
+ *   furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in
+ *   all copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ *   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ *   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *   THE SOFTWARE.
+ *
+ */
+
 package com.owncloud.android.lib.common.http.methods
 
 import com.owncloud.android.lib.common.http.HttpClient
@@ -14,23 +38,41 @@ import java.net.URL
 import java.util.concurrent.TimeUnit
 
 abstract class HttpBaseMethod constructor(url: URL) {
-    var okHttpClient: OkHttpClient
     var httpUrl: HttpUrl = url.toHttpUrlOrNull() ?: throw MalformedURLException()
     var request: Request
+    var followPermanentRedirects = false
     abstract var response: Response
-
     var call: Call? = null
 
+    var followRedirects: Boolean = true
+    var retryOnConnectionFailure: Boolean = true
+    var connectionTimeoutVal: Long? = null
+    var connectionTimeoutUnit: TimeUnit? = null
+    var readTimeoutVal: Long? = null
+        private set
+    var readTimeoutUnit: TimeUnit? = null
+        private set
+
     init {
-        okHttpClient = HttpClient.getOkHttpClient()
         request = Request.Builder()
             .url(httpUrl)
             .build()
     }
 
     @Throws(Exception::class)
-    open fun execute(): Int {
-        return onExecute()
+    open fun execute(httpClient: HttpClient): Int {
+        val okHttpClient = httpClient.okHttpClient.newBuilder().apply {
+            retryOnConnectionFailure(retryOnConnectionFailure)
+            followRedirects(followRedirects)
+            readTimeoutUnit?.let { unit ->
+                readTimeoutVal?.let { readTimeout(it, unit) }
+            }
+            connectionTimeoutUnit?.let { unit ->
+               connectionTimeoutVal?.let { connectTimeout(it, unit) }
+            }
+        }.build()
+
+        return onExecute(okHttpClient)
     }
 
     open fun setUrl(url: HttpUrl) {
@@ -99,6 +141,11 @@ abstract class HttpBaseMethod constructor(url: URL) {
         return response.body?.byteStream()
     }
 
+    /**
+     * returns the final url after following the last redirect.
+     */
+    open fun getFinalUrl() = response.request.url
+
     /*************************
      *** Connection Params ***
      *************************/
@@ -107,31 +154,19 @@ abstract class HttpBaseMethod constructor(url: URL) {
     //         Setter
     //////////////////////////////
     // Connection parameters
-    open fun setRetryOnConnectionFailure(retryOnConnectionFailure: Boolean) {
-        okHttpClient = okHttpClient.newBuilder()
-            .retryOnConnectionFailure(retryOnConnectionFailure)
-            .build()
-    }
+
 
     open fun setReadTimeout(readTimeout: Long, timeUnit: TimeUnit) {
-        okHttpClient = okHttpClient.newBuilder()
-            .readTimeout(readTimeout, timeUnit)
-            .build()
+        readTimeoutVal = readTimeout
+        readTimeoutUnit = timeUnit
     }
 
     open fun setConnectionTimeout(
         connectionTimeout: Long,
         timeUnit: TimeUnit
     ) {
-        okHttpClient = okHttpClient.newBuilder()
-            .readTimeout(connectionTimeout, timeUnit)
-            .build()
-    }
-
-    open fun setFollowRedirects(followRedirects: Boolean) {
-        okHttpClient = okHttpClient.newBuilder()
-            .followRedirects(followRedirects)
-            .build()
+        connectionTimeoutVal = connectionTimeout
+        connectionTimeoutUnit = timeUnit
     }
 
     /************
@@ -148,5 +183,5 @@ abstract class HttpBaseMethod constructor(url: URL) {
     //         For override
     //////////////////////////////
     @Throws(Exception::class)
-    protected abstract fun onExecute(): Int
+    protected abstract fun onExecute(okHttpClient: OkHttpClient): Int
 }

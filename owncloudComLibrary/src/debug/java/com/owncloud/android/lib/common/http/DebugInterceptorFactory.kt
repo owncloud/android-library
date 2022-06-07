@@ -1,8 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2022 ownCloud GmbH.
- *
- *   @author Christian Schabesberger
- *   @author David González Verdugo
+ *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +19,12 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
 
-package com.owncloud.android.lib.resources.shares.services
+package com.owncloud.android.lib.common.http
 
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.Service
-import com.owncloud.android.lib.resources.shares.responses.ShareeOcsResponse
+import com.facebook.stetho.okhttp3.StethoInterceptor
 
-interface ShareeService : Service {
-    fun getSharees(
-        searchString: String,
-        page: Int,
-        perPage: Int
-    ): RemoteOperationResult<ShareeOcsResponse>
+object DebugInterceptorFactory {
+    fun getInterceptor() = StethoInterceptor()
 }

@@ -23,6 +23,7 @@
  */
 package com.owncloud.android.lib.common.http.methods.webdav
 
+import at.bitfire.dav4jvm.DavOCResource
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
@@ -47,10 +48,10 @@ class PropfindMethod(
         private set
 
     @Throws(IOException::class, DavException::class)
-    public override fun onExecute(): Int {
+    public override fun onDavExecute(davResource: DavOCResource): Int {
         davResource.propfind(
             depth = depth,
-            reqProp = *propertiesToRequest,
+            reqProp = propertiesToRequest,
             listOfHeaders = super.getRequestHeadersAsHashMap(),
             callback = { response: Response, hrefRelation: HrefRelation? ->
                 when (hrefRelation) {
