@@ -26,10 +26,11 @@ package com.owncloud.android.lib.common.http.methods.webdav
 import at.bitfire.dav4jvm.Property
 import at.bitfire.dav4jvm.PropertyUtils.getAllPropSet
 import at.bitfire.dav4jvm.PropertyUtils.getQuotaPropset
+import com.owncloud.android.lib.common.http.methods.webdav.properties.OCShareTypes
 
 object DavUtils {
     @JvmStatic val allPropset: Array<Property.Name>
-        get() = getAllPropSet()
+        get() = getAllPropSet().plus(OCShareTypes.NAME)
 
     val quotaPropSet: Array<Property.Name>
         get() = getQuotaPropset()

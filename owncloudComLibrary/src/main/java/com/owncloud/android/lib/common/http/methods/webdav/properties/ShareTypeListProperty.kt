@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2020 ownCloud GmbH.
+ *   Copyright (C) 2022 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,26 @@
  *   THE SOFTWARE.
  *
  */
-package com.owncloud.android.lib.resources.files.services
+package com.owncloud.android.lib.common.http.methods.webdav.properties
 
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.Service
+import at.bitfire.dav4jvm.Property
+import at.bitfire.dav4jvm.PropertyFactory
+import at.bitfire.dav4jvm.XmlUtils
+import org.xmlpull.v1.XmlPullParser
+import java.util.LinkedList
 
-interface FileService : Service {
-    fun checkPathExistence(path: String, isUserLogged: Boolean): RemoteOperationResult<Boolean>
-    fun getUrlToOpenInWeb(openWebEndpoint: String, fileId: String): RemoteOperationResult<String>
+abstract class ShareTypeListProperty : Property {
+
+    val shareTypes = LinkedList<String>()
+
+    override fun toString() = "share types =[" + shareTypes.joinToString(", ") + "]"
+
+    abstract class Factory : PropertyFactory {
+
+        fun create(parser: XmlPullParser, list: ShareTypeListProperty): ShareTypeListProperty {
+            XmlUtils.readTextPropertyList(parser, Property.Name(XmlUtils.NS_OWNCLOUD, "share-type"), list.shareTypes)
+            return list
+        }
+
+    }
 }
