@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 
 dependencies {
     api 'com.squareup.okhttp3:okhttp:4.6.0'
@@ -16,7 +17,7 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.8.1'
+    testImplementation 'org.robolectric:robolectric:4.9'
     debugImplementation 'com.facebook.stetho:stetho-okhttp3:1.6.0'
 }
 

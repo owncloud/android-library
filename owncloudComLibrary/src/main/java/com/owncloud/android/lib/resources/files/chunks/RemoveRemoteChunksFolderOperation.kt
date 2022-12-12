@@ -1,4 +1,5 @@
 /* ownCloud Android Library is available under MIT license
+ *   @author David González Verdugo
  *   Copyright (C) 2020 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,29 +22,12 @@
  *   THE SOFTWARE.
  *
  */
-package com.owncloud.android.lib.resources.files
+package com.owncloud.android.lib.resources.files.chunks
 
 import android.net.Uri
 import com.owncloud.android.lib.common.OwnCloudClient
-import okhttp3.HttpUrl
+import com.owncloud.android.lib.resources.files.RemoveRemoteFileOperation
 
-class RemoteFileUtil {
-    companion object {
-        /**
-         * Retrieves a relative path from a remote file url
-         *
-         *
-         * Example: url:port/remote.php/dav/files/username/Documents/text.txt => /Documents/text.txt
-         *
-         * @param url    remote file url
-         * @param userId file owner
-         * @return remote relative path of the file
-         */
-        fun getRemotePathFromUrl(url: HttpUrl, userId: String): String? {
-            val davFilesPath = OwnCloudClient.WEBDAV_FILES_PATH_4_0 + userId
-            val absoluteDavPath = Uri.decode(url.encodedPath)
-            val pathToOc = absoluteDavPath.split(davFilesPath)[0]
-            return absoluteDavPath.replace(pathToOc + davFilesPath, "")
-        }
-    }
+class RemoveRemoteChunksFolderOperation(remotePath: String) : RemoveRemoteFileOperation(remotePath) {
+    override fun getSrcWebDavUriForClient(client: OwnCloudClient): Uri = client.uploadsWebDavUri
 }

@@ -1,5 +1,6 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2020 ownCloud GmbH.
+ *
+ *   Copyright (C) 2022 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -19,32 +20,20 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
 
-package com.owncloud.android.lib.resources.files.chunks;
+package com.owncloud.android.lib.resources.webfinger.responses
 
-import com.owncloud.android.lib.resources.files.MoveRemoteFileOperation;
+import com.squareup.moshi.JsonClass
 
-/**
- * Remote operation to move the file built from chunks after uploading it
- *
- * @author David González Verdugo
- */
-public class MoveRemoteChunksFileOperation extends MoveRemoteFileOperation {
+@JsonClass(generateAdapter = true)
+data class WebfingerJrdResponse(
+    val subject: String,
+    val links: List<LinkItem>
+)
 
-    /**
-     * Constructor.
-     *
-     * @param srcRemotePath    Remote path of the file/folder to move.
-     * @param targetRemotePath Remove path desired for the file/folder after moving it.
-     * @param overwrite
-     */
-    public MoveRemoteChunksFileOperation(String srcRemotePath, String targetRemotePath, boolean overwrite,
-                                         String fileLastModifTimestamp, long fileLength) {
-        super(srcRemotePath, targetRemotePath, overwrite);
-        moveChunkedFile = true;
-        mFileLastModifTimestamp = fileLastModifTimestamp;
-        mFileLength = fileLength;
-    }
-}
+@JsonClass(generateAdapter = true)
+data class LinkItem(
+    val href: String,
+    val rel: String
+)
