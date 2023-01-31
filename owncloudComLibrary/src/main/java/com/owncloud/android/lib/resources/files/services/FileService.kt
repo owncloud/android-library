@@ -43,7 +43,8 @@ interface FileService : Service {
     fun createFolder(
         remotePath: String,
         createFullPath: Boolean,
-        isChunkFolder: Boolean = false
+        isChunkFolder: Boolean = false,
+        spaceWebDavUrl: String? = null,
     ): RemoteOperationResult<Unit>
 
     fun downloadFile(
@@ -57,15 +58,18 @@ interface FileService : Service {
     ): RemoteOperationResult<Unit>
 
     fun readFile(
-        remotePath: String
+        remotePath: String,
+        spaceWebDavUrl: String? = null,
     ): RemoteOperationResult<RemoteFile>
 
     fun refreshFolder(
-        remotePath: String
+        remotePath: String,
+        spaceWebDavUrl: String? = null,
     ): RemoteOperationResult<ArrayList<RemoteFile>>
 
     fun removeFile(
-        remotePath: String
+        remotePath: String,
+        spaceWebDavUrl: String? = null,
     ): RemoteOperationResult<Unit>
 
     fun renameFile(
@@ -73,5 +77,6 @@ interface FileService : Service {
         oldRemotePath: String,
         newName: String,
         isFolder: Boolean,
+        spaceWebDavUrl: String? = null,
     ): RemoteOperationResult<Unit>
 }
