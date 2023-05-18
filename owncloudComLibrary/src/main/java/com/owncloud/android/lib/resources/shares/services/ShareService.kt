@@ -43,6 +43,7 @@ interface ShareService : Service {
         shareType: ShareType,
         shareWith: String,
         permissions: Int,
+        spaceId: String?,
         name: String,
         password: String,
         expirationDate: Long,

@@ -52,6 +52,7 @@ class OCShareService(override val client: OwnCloudClient) : ShareService {
         shareType: ShareType,
         shareWith: String,
         permissions: Int,
+        spaceId: String?,
         name: String,
         password: String,
         expirationDate: Long,
@@ -60,7 +61,8 @@ class OCShareService(override val client: OwnCloudClient) : ShareService {
             remoteFilePath,
             shareType,
             shareWith,
-            permissions
+            permissions,
+            spaceId,
         ).apply {
             this.name = name
             this.password = password

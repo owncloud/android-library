@@ -3,7 +3,8 @@
  *   @author David A. Velasco
  *   @author David González Verdugo
  *   @author Fernando Sanz Velasco
- *   Copyright (C) 2021 ownCloud GmbH
+ *   @author Juan Carlos Garrote Gascón
+ *   Copyright (C) 2023 ownCloud GmbH
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -57,6 +58,7 @@ import java.util.Locale
  * @author David A. Velasco
  * @author David González Verdugo
  * @author Fernando Sanz Velasco
+ * @author Juan Carlos Garrote Gascón
  */
 
 /**
@@ -80,7 +82,8 @@ class CreateRemoteShareOperation(
     private val remoteFilePath: String,
     private val shareType: ShareType,
     private val shareWith: String,
-    private val permissions: Int
+    private val permissions: Int,
+    private val spaceId: String? = null,
 ) : RemoteOperation<ShareResponse>() {
 
     var name = "" // Name to set for the public link
@@ -145,6 +148,10 @@ class CreateRemoteShareOperation(
             formBodyBuilder.add(PARAM_NAME, name)
         }
 
+        if (spaceId != null) {
+            formBodyBuilder.add(PARAM_SPACE, spaceId)
+        }
+
         if (expirationDateInMillis > INIT_EXPIRATION_DATE_IN_MILLIS) {
             val dateFormat = SimpleDateFormat(FORMAT_EXPIRATION_DATE, Locale.getDefault())
             val expirationDate = Calendar.getInstance()
@@ -204,6 +211,7 @@ class CreateRemoteShareOperation(
         private const val PARAM_SHARE_WITH = "shareWith"
         private const val PARAM_PASSWORD = "password"
         private const val PARAM_PERMISSIONS = "permissions"
+        private const val PARAM_SPACE = "space"
 
         //Arguments - constant values
         private const val FORMAT_EXPIRATION_DATE = "yyyy-MM-dd"
