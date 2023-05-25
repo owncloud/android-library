@@ -1,5 +1,7 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2022 ownCloud GmbH.
+ *   @author Abel García de Prada
+ *
+ *   Copyright (C) 2023 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +23,34 @@
  *   THE SOFTWARE.
  *
  */
+package com.owncloud.android.lib.resources.appregistry.responses
 
-package com.owncloud.android.lib.resources.status.services.implementation
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-import com.owncloud.android.lib.common.OwnCloudClient
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.status.GetRemoteCapabilitiesOperation
-import com.owncloud.android.lib.resources.status.RemoteCapability
-import com.owncloud.android.lib.resources.status.services.CapabilityService
+@JsonClass(generateAdapter = true)
+data class AppRegistryResponse(
+    @Json(name = "mime-types")
+    val value: List<AppRegistryMimeTypeResponse>
+)
 
-class OCCapabilityService(override val client: OwnCloudClient) : CapabilityService {
-    override fun getCapabilities(): RemoteOperationResult<RemoteCapability> =
-        GetRemoteCapabilitiesOperation().execute(client)
-}
+@JsonClass(generateAdapter = true)
+data class AppRegistryMimeTypeResponse(
+    @Json(name = "mime_type") val mimeType: String,
+    val ext: String? = null,
+    @Json(name = "app_providers")
+    val appProviders: List<AppRegistryProviderResponse>,
+    val name: String? = null,
+    val icon: String? = null,
+    val description: String? = null,
+    @Json(name = "allow_creation")
+    val allowCreation: Boolean? = null,
+    @Json(name = "default_application")
+    val defaultApplication: String? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class AppRegistryProviderResponse(
+    val name: String,
+    val icon: String,
+)

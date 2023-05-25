@@ -1,4 +1,5 @@
 /* ownCloud Android Library is available under MIT license
+ *
  *   Copyright (C) 2022 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,18 +20,20 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
 
-package com.owncloud.android.lib.resources.status.services.implementation
+package com.owncloud.android.lib.resources.webfinger.responses
 
-import com.owncloud.android.lib.common.OwnCloudClient
-import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.status.GetRemoteCapabilitiesOperation
-import com.owncloud.android.lib.resources.status.RemoteCapability
-import com.owncloud.android.lib.resources.status.services.CapabilityService
+import com.squareup.moshi.JsonClass
 
-class OCCapabilityService(override val client: OwnCloudClient) : CapabilityService {
-    override fun getCapabilities(): RemoteOperationResult<RemoteCapability> =
-        GetRemoteCapabilitiesOperation().execute(client)
-}
+@JsonClass(generateAdapter = true)
+data class WebFingerResponse(
+    val subject: String,
+    val links: List<LinkItem>?
+)
+
+@JsonClass(generateAdapter = true)
+data class LinkItem(
+    val rel: String,
+    val href: String,
+)

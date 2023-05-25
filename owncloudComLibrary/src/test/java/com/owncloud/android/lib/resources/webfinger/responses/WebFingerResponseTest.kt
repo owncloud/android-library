@@ -8,34 +8,34 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 
-class WebfingerResponseTest {
-    lateinit var adapter: JsonAdapter<WebfingerJrdResponse>
+class WebFingerResponseTest {
+    lateinit var adapter: JsonAdapter<WebFingerResponse>
 
     private fun loadResponses(fileName: String) = adapter.fromJson(File(fileName).readText())
 
     @Before
     fun prepare() {
         val moshi = Moshi.Builder().build()
-        adapter = moshi.adapter(WebfingerJrdResponse::class.java)
+        adapter = moshi.adapter(WebFingerResponse::class.java)
     }
 
     @Test
     fun `check rel in too much information - ok`() {
         val response = loadResponses(TOO_MUCH_INFORMATION_JSON)!!
-        Assert.assertEquals("https://gast.somedomain.de", response.links[0].href)
-        Assert.assertEquals("http://webfinger.owncloud/rel/server-instance", response.links[0].rel)
+        Assert.assertEquals("https://gast.somedomain.de", response.links!![0].href)
+        Assert.assertEquals("http://webfinger.owncloud/rel/server-instance", response.links!![0].rel)
     }
 
     @Test(expected = JsonDataException::class)
     fun `check key value pairs - ko - no href key`() {
         val response = loadResponses(BROKEN_JSON)!!
-        Assert.assertEquals("https://gast.somedomain.de", response.links[0].href)
+        Assert.assertEquals("https://gast.somedomain.de", response.links!![0].href)
     }
 
     @Test(expected = JsonDataException::class)
     fun `check key value pairs - ko - no rel key`() {
         val response = loadResponses(BROKEN_JSON)!!
-        Assert.assertEquals("https://gast.somedomain.de", response.links[0].href)
+        Assert.assertEquals("https://gast.somedomain.de", response.links!![0].href)
     }
 
     companion object {

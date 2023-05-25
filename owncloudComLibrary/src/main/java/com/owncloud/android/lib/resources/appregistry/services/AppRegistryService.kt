@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
- *   Copyright (C) 2022 ownCloud GmbH.
+ *   Copyright (C) 2023 ownCloud GmbH.
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
  *   of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +19,26 @@
  *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *   THE SOFTWARE.
- *
  */
 
-package com.owncloud.android.lib.resources.status.services.implementation
+package com.owncloud.android.lib.resources.appregistry.services
 
-import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.operations.RemoteOperationResult
-import com.owncloud.android.lib.resources.status.GetRemoteCapabilitiesOperation
-import com.owncloud.android.lib.resources.status.RemoteCapability
-import com.owncloud.android.lib.resources.status.services.CapabilityService
+import com.owncloud.android.lib.resources.Service
+import com.owncloud.android.lib.resources.appregistry.responses.AppRegistryResponse
 
-class OCCapabilityService(override val client: OwnCloudClient) : CapabilityService {
-    override fun getCapabilities(): RemoteOperationResult<RemoteCapability> =
-        GetRemoteCapabilitiesOperation().execute(client)
+interface AppRegistryService : Service {
+    fun getAppRegistry(): RemoteOperationResult<AppRegistryResponse>
+
+    fun getUrlToOpenInWeb(
+        openWebEndpoint: String,
+        fileId: String,
+        appName: String,
+    ): RemoteOperationResult<String>
+
+    fun createFileWithAppProvider(
+        createFileWithAppProviderEndpoint: String,
+        parentContainerId: String,
+        filename: String,
+    ): RemoteOperationResult<String>
 }

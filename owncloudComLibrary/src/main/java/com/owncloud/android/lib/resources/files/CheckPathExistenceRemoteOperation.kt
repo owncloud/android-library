@@ -1,5 +1,5 @@
 /* ownCloud Android Library is available under MIT license
-*   Copyright (C) 2020 ownCloud GmbH.
+*   Copyright (C) 2023 ownCloud GmbH.
 *
 *   Permission is hereby granted, free of charge, to any person obtaining a copy
 *   of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ package com.owncloud.android.lib.resources.files
 
 import com.owncloud.android.lib.common.OwnCloudClient
 import com.owncloud.android.lib.common.http.HttpConstants
-import com.owncloud.android.lib.common.http.methods.webdav.DavUtils.allPropset
+import com.owncloud.android.lib.common.http.methods.webdav.DavUtils.allPropSet
 import com.owncloud.android.lib.common.http.methods.webdav.PropfindMethod
 import com.owncloud.android.lib.common.network.WebdavUtils
 import com.owncloud.android.lib.common.operations.RemoteOperation
@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit
  * @author David A. Velasco
  * @author David González Verdugo
  * @author Abel García de Prada
+ * @author Juan Carlos Garrote Gascón
  *
  * @param remotePath      Path to append to the URL owned by the client instance.
  * @param isUserLoggedIn    When `true`, the username won't be added at the end of the PROPFIND url since is not
@@ -48,21 +49,22 @@ import java.util.concurrent.TimeUnit
  */
 class CheckPathExistenceRemoteOperation(
     val remotePath: String? = "",
-    val isUserLoggedIn: Boolean
+    val isUserLoggedIn: Boolean,
+    val spaceWebDavUrl: String? = null,
 ) : RemoteOperation<Boolean>() {
 
     override fun run(client: OwnCloudClient): RemoteOperationResult<Boolean> {
-        return try {
-            val stringUrl =
-                if (isUserLoggedIn) client.baseFilesWebDavUri.toString()
-                else client.userFilesWebDavUri.toString() + WebdavUtils.encodePath(remotePath)
+        val baseStringUrl = spaceWebDavUrl ?: if (isUserLoggedIn) client.baseFilesWebDavUri.toString()
+            else client.userFilesWebDavUri.toString()
+        val stringUrl = baseStringUrl + WebdavUtils.encodePath(remotePath)
 
-            val propFindMethod = PropfindMethod(URL(stringUrl), 0, allPropset).apply {
+        return try {
+            val propFindMethod = PropfindMethod(URL(stringUrl), 0, allPropSet).apply {
                 setReadTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
                 setConnectionTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
             }
 
-            var status = client.executeHttpMethod(propFindMethod)
+            val status = client.executeHttpMethod(propFindMethod)
             /* PROPFIND method
              * 404 NOT FOUND: path doesn't exist,
              * 207 MULTI_STATUS: path exists.
@@ -77,7 +79,7 @@ class CheckPathExistenceRemoteOperation(
             val result = RemoteOperationResult<Boolean>(e)
             Timber.e(
                 e,
-                "Existence check for ${client.userFilesWebDavUri}${WebdavUtils.encodePath(remotePath)} : ${result.logMessage}"
+                "Existence check for $stringUrl : ${result.logMessage}"
             )
             result
         }

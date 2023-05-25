@@ -36,8 +36,7 @@ import com.owncloud.android.lib.resources.shares.ShareType
 import com.owncloud.android.lib.resources.shares.UpdateRemoteShareOperation
 import com.owncloud.android.lib.resources.shares.services.ShareService
 
-class OCShareService(override val client: OwnCloudClient) :
-    ShareService {
+class OCShareService(override val client: OwnCloudClient) : ShareService {
     override fun getShares(
         remoteFilePath: String,
         reshares: Boolean,
@@ -56,7 +55,6 @@ class OCShareService(override val client: OwnCloudClient) :
         name: String,
         password: String,
         expirationDate: Long,
-        publicUpload: Boolean
     ): RemoteOperationResult<ShareResponse> =
         CreateRemoteShareOperation(
             remoteFilePath,
@@ -67,7 +65,6 @@ class OCShareService(override val client: OwnCloudClient) :
             this.name = name
             this.password = password
             this.expirationDateInMillis = expirationDate
-            this.publicUpload = publicUpload
             this.retrieveShareDetails = true
         }.execute(client)
 
@@ -77,7 +74,6 @@ class OCShareService(override val client: OwnCloudClient) :
         password: String?,
         expirationDate: Long,
         permissions: Int,
-        publicUpload: Boolean
     ): RemoteOperationResult<ShareResponse> =
         UpdateRemoteShareOperation(
             remoteId
@@ -86,11 +82,10 @@ class OCShareService(override val client: OwnCloudClient) :
             this.password = password
             this.expirationDateInMillis = expirationDate
             this.permissions = permissions
-            this.publicUpload = publicUpload
             this.retrieveShareDetails = true
         }.execute(client)
 
-    override fun deleteShare(remoteId: String): RemoteOperationResult<ShareResponse> =
+    override fun deleteShare(remoteId: String): RemoteOperationResult<Unit> =
         RemoveRemoteShareOperation(
             remoteId
         ).execute(client)
